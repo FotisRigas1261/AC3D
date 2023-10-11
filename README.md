@@ -8,12 +8,17 @@ select the acetylation dataset fro the second table
 For each of the acetylation sites that can be found in the cplm database:
 
 From UniProt: functional information
+
 -Is the acetylated lysine known as functional site?
+
 -Is the acetylated lysine near a residue known as functional site? (Both in primary and tertiary sequence)
 
 From AlphaFold database: structural information
+
 -With structureMap, get Secondary structure of residues
+
 -Accessibility of residues Whether the residue is in an intrinsically disordered region
+
 -With dynaMine, get Information on the backbone dynamics
 
 Basically if someone querries a specific protein plus a specific residue, they should get information on all of the above.
