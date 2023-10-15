@@ -75,16 +75,17 @@ gff = get_uniprot_gff(uniprot_id).splitlines()
 print(gff[10])# just test if the gff file could be converted into txt for further query
 
 
-
 binding_site_lines = [line for line in gff if 'UniProtKB	Binding site' in line]
+active_site_lines = [line for line in gff if 'UniProtKB	Active site' in line]
+
+function_site_lines = binding_site_lines + active_site_lines
 
 
 
-
-print(binding_site_lines[3])
+print(function_site_lines[3])
 
 result_list = []
-for line in binding_site_lines:
+for line in function_site_lines:
     
     numbers = re.findall(r'\d+', line)
     number_list = [int(num) for num in numbers]
@@ -93,22 +94,22 @@ for line in binding_site_lines:
     
 print(result_list)
 
-binding_site_start_location = []
+function_site_start_location = []
 
 for line in result_list:
-    binding_site_start_location.append(line[1])
+    function_site_start_location.append(line[1])
 
 
-print(binding_site_start_location)
+print(function_site_start_location)
 
 
-binding_site_end_location = []
+function_site_end_location = []
 
 for line in result_list:
-    binding_site_end_location.append(line[2])
+    function_site_end_location.append(line[2])
 
 
-print(binding_site_end_location)
+print(function_site_end_location)
 
 
 
