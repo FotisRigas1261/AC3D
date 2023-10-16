@@ -24,3 +24,14 @@ From AlphaFold database: structural information
 Basically if someone querries a specific protein plus a specific residue, they should get information on all of the above.
 This information cannot be found into the CPLM database so we might need to connect to the APIs of Uniprot and Alpha fold
 (i don't know how to do this but i guess we will find a way)
+
+
+Work from 16/10 to 23/10:
+
+1. Integrate the functions([1]from CPLM txt file parse the CPLM ID, Uniprot ID, genename, acetylation position; [2] from Uniprot parse the Uniprot ID, function sites location and sequence, lysine acetylation distance to function site(0aa if in the sequence),secondary structure information(location and sequence),[3] from Alphafold parse the PDB file of the 3D localization information of atoms and residues(Other information needed for 3D visualization is being searched)).
+
+2. An uniorm input(CPLM ID, Uniprot ID, and Gene name) start from the CPLM database.
+3. How to operate lysine acetylation conservation calculation(what sequence comparison )
+4. 3D visualization method implemented in python(highlight the lysine acetylation in 3D)
+
+
