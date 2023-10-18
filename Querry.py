@@ -1,8 +1,7 @@
 import get_from_uniprot
 
-def Querry():
+def Querry(Querry_string):
 
-    Querry_string = input('Type the name of the protein you want to investigate or a CPLM id: ')
 
     CPLMids = []
     if not Querry_string.startswith("CPLM"):
