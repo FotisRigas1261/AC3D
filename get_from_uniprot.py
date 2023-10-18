@@ -6,7 +6,7 @@ import requests
 import pandas as pd
 
 
-#this code is to retrieve the fasta file from uniprot so the sequence and name information of the protein could be obtained by the uniprot ID
+#this code is to retrieve the fasta file from UniProt so the sequence and name information of the protein can be obtained by the UniProt ID
 def get_uniprot_fasta(uniprot_id):
     base_url = "https://rest.uniprot.org/uniprotkb/"
     url = f"{base_url}{uniprot_id}.fasta"
@@ -26,7 +26,7 @@ def print_data(uniprot_id):
     if fasta_data:
         print(f"Fasta data for {uniprot_id}:\n{fasta_data}")
        
-    header = header = fasta_data.split('\n', 1)[0]
+    header = fasta_data.split('\n', 1)[0]
     
     
     print(header)
@@ -50,8 +50,8 @@ def print_data(uniprot_id):
 
 
 # this code is for functional site(binding site) location retrieving
-#The location information is stored in the gff files in uniprot, the following code could get the start and end residue number, combined with the fasta file, 
-#we could get the bindind site sequence and check if it is the same with the lycine acetylation location got from CPLM
+#The location information is stored in the gff files in UniProt, the following code could get the start and end residue number, combined with the fasta file, 
+#we could get the binding site sequence and check if it is the same as the lycine acetylation location from CPLM
 
 
 def get_uniprot_gff(uniprot_id):
