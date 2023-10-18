@@ -17,7 +17,7 @@ def get_CPLM_data(path):
     df=CPLM_initial_dataframe.iloc[:,[0,1,2,4,5,6]]
     #print(final_CPLM_dataframe.iloc[200,0])
     #print(final_CPLM_dataframe.iloc[:,[0,1,2,3,4]]) #column 5 is the sequence
-    df.columns = ["CPLM_id", "Accession_Number", "Position", "Protein_Name","Species","Sequence"]
+    df.columns = ["CPLM_id", "Accession_Number", "Position", "Gene_Name","Species","Sequence"]
     
     
     #create a dict with all positions for each unique CPLM_id
@@ -43,20 +43,20 @@ def get_CPLM_data(path):
     dff = dff.drop(columns=["Position"])
     dff = dff.dropna()
     
-    duplicated_proteins=dff.duplicated(subset=["Protein_Name"])
+    duplicated_proteins=dff.duplicated(subset=["Accession_Number"])
     protein_names = {}
     CPLM_ids = []
     ii = 0
     for i in dff.index:
         
         if duplicated_proteins[i]==False:
-            protein_names[dff["Protein_Name"][ii]] = CPLM_ids
+            protein_names[dff["Accession_Number"][ii]] = CPLM_ids
             ii = i
             CPLM_ids = []
         
         CPLM_ids.append(dff["CPLM_id"][i])
     if CPLM_ids != []:
-        protein_names[dff["Protein_Name"][ii]] = positions  
+        protein_names[dff["Accession_Number"][ii]] = positions  
     
     
     # save dicts as txt files

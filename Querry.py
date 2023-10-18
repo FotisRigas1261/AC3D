@@ -6,9 +6,15 @@ def Querry():
     if not Querry_string.startswith("CPLM"):
         with open("CPLMids.txt","r") as f:
             d = eval(f.read())
-            CPLMids = CPLMids + d[Querry_string]
+            try:
+                CPLMids = CPLMids + d[Querry_string]
+            except:
+                print("Protein name not found")
     else:
-        CPLMids.append(Querry_string)
+        try:
+            CPLMids.append(Querry_string)
+        except:
+            print("CPLM id not found")
         
     
     positions = []       

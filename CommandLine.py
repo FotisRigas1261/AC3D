@@ -3,6 +3,7 @@ import Create_CPLMdf as c
 
 print("Welcome to the protein acetylation website!\n")
 
+#if data files do not exist yet, create them
 try:
     open("CPLMids.txt","r")
     open("positions.txt","r")
