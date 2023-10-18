@@ -1,8 +1,27 @@
-def Querry(dataframe):
+def Querry():
 
-    Querry_string = input('Type the name of the protein you want to investigate: ')
+    Querry_string = input('Type the name of the protein you want to investigate or a CPLM id: ')
 
-    resultCPLMid = dataframe['CPLM_id']==Querry_string
+    CPLMids = []
+    if not Querry_string.startswith("CPLM"):
+        with open("CPLMids.txt","r") as f:
+            d = eval(f.read())
+            CPLMids = CPLMids + d[Querry_string]
+    else:
+        CPLMids.append(Querry_string)
+        
+    
+    positions = []       
+    with open("positions.txt","r") as f:
+        d = eval(f.read())
+        for CPLMid in CPLMids:
+            positions = positions + d[CPLMid]
+    
+    
+    return positions
+
+"""
+resultCPLMid = dataframe['CPLM_id']==Querry_string
     countCPLMid = resultCPLMid.sum()
     resultAccession_Number = dataframe['Accession_Number']==Querry_string
     countAccession_Number = resultAccession_Number.sum()
@@ -29,3 +48,4 @@ def Querry(dataframe):
             print("Error: There should not be a protein with overlaping name, CPLMid or accession number!")
 
     return dataframe.iloc[querry_index,1]
+"""
