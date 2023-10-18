@@ -19,33 +19,34 @@ def get_uniprot_fasta(uniprot_id):
         print(f"Error retrieving data: {response.status_code}")
         return None
 
-uniprot_id = "P05067"
-fasta_data = get_uniprot_fasta(uniprot_id)
-
-if fasta_data:
-    print(f"Fasta data for {uniprot_id}:\n{fasta_data}")
-   
-header = header = fasta_data.split('\n', 1)[0]
-
-
-print(header)
-
-
-
-match_species = re.search(r'OS=(\w+\s\w+)', header)
-
-if match_species:
-    species = match_species.group(1)
-    print(species)
-
-
-
-
-match_gene_name = re.search(r'GN=([^=\s]+)', header)
-
-if match_gene_name:
-    gene_name = match_gene_name.group(1)
-    print(gene_name)
+#uniprot_id = "P05067"
+def print_data(uniprot_id):
+    fasta_data = get_uniprot_fasta(uniprot_id)
+    
+    if fasta_data:
+        print(f"Fasta data for {uniprot_id}:\n{fasta_data}")
+       
+    header = header = fasta_data.split('\n', 1)[0]
+    
+    
+    print(header)
+    
+    
+    
+    match_species = re.search(r'OS=(\w+\s\w+)', header)
+    
+    if match_species:
+        species = match_species.group(1)
+        print(species)
+    
+    
+    
+    
+    match_gene_name = re.search(r'GN=([^=\s]+)', header)
+    
+    if match_gene_name:
+        gene_name = match_gene_name.group(1)
+        print(gene_name)
 
 
 # this code is for functional site(binding site) location retrieving
@@ -107,7 +108,7 @@ def function_site(uniprot_id):
     function = pd.DataFrame({'start_location': function_site_start_location, 'end_location': function_site_end_location, 'Sequence': function_site_sequence})
     return function
 
-print(function_site(uniprot_id))
+#print(function_site(uniprot_id))
 
 
 

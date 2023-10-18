@@ -1,3 +1,5 @@
+import get_from_uniprot
+
 def Querry():
 
     Querry_string = input('Type the name of the protein you want to investigate or a CPLM id: ')
@@ -23,8 +25,12 @@ def Querry():
         for CPLMid in CPLMids:
             positions = positions + d[CPLMid]
     
+    print("This protein has acetylations at positions:")
+    print(positions)
     
-    return positions
+    if not Querry_string.startswith("CPLM"):
+        get_from_uniprot.print_data(Querry_string)
+    
 
 """
 resultCPLMid = dataframe['CPLM_id']==Querry_string

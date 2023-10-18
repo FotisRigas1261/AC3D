@@ -10,4 +10,4 @@ try:
 except:
     c.get_CPLM_data('Acetylation.txt')
     
-print(q.Querry())
+q.Querry()
