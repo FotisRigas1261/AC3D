@@ -2,6 +2,8 @@ import Querry as q
 import Create_CPLMdf as c
 import sys
 import get_from_uniprot
+import alphafold
+import requests
 
 #Find the querried string
 Querry_string = ""
@@ -24,3 +26,7 @@ Uniprot_id_of_Querry,Lysine_positions=q.Querry(Querry_string)
 #use the uniprot id to get information
 get_from_uniprot.get_uniprot_fasta(Uniprot_id_of_Querry)
 get_from_uniprot.print_data(Uniprot_id_of_Querry)
+link = alphafold.get_alphafold_download_link(Uniprot_id_of_Querry)
+print(link)
+alphafold.parse_pdb(link)
+
