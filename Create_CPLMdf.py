@@ -1,10 +1,5 @@
 import pandas as pd
 
-
-#############################################################
-### Create the Acetylation Database from the CPLM txt file###
-#############################################################
-
 def get_CPLM_data(path):
 
     #This file creates a csv folder from the initial txt from cplm
@@ -15,11 +10,9 @@ def get_CPLM_data(path):
     
     #Only keep the useful information of the initial array
     df=CPLM_initial_dataframe.iloc[:,[0,1,2,4,5,6]]
-    #print(final_CPLM_dataframe.iloc[200,0])
-    #print(final_CPLM_dataframe.iloc[:,[0,1,2,3,4]]) #column 5 is the sequence
     df.columns = ["CPLM_id", "Accession_Number", "Position", "Gene_Name","Species","Sequence"]
     
-    
+    ##DICTIONARY with CPLM ids as keys and positions as values
     #create a dict with all positions for each unique CPLM_id
     duplicated_ids=df.duplicated(subset=["CPLM_id"])
     CPLM_positions = {}
@@ -37,7 +30,7 @@ def get_CPLM_data(path):
         CPLM_positions[df["CPLM_id"][ii]] = positions   
       
         
-    
+    ##DICTIONARY with Accession numbers as keys and CPLMids as values
     #create a dict with all CPLM_ids for each unique protein name
     dff = df.drop_duplicates(subset=["CPLM_id"])
     dff = dff.drop(columns=["Position"])
@@ -58,7 +51,7 @@ def get_CPLM_data(path):
     if CPLM_ids != []:
         protein_names[dff["Accession_Number"][ii]] = positions  
     
-    
+ 
     # save dicts as txt files
     with open('positions.txt', 'w') as f:
         print(CPLM_positions, file=f)

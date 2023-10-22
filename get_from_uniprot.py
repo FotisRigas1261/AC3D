@@ -10,9 +10,7 @@ import pandas as pd
 def get_uniprot_fasta(uniprot_id):
     base_url = "https://rest.uniprot.org/uniprotkb/"
     url = f"{base_url}{uniprot_id}.fasta"
-    
     response = requests.get(url)
-    
     if response.ok:
         return response.text
     else:
@@ -28,19 +26,13 @@ def print_data(uniprot_id):
        
     header = fasta_data.split('\n', 1)[0]
     
-    
     print(header)
-    
-    
     
     match_species = re.search(r'OS=(\w+\s\w+)', header)
     
     if match_species:
         species = match_species.group(1)
         print(species)
-    
-    
-    
     
     match_gene_name = re.search(r'GN=([^=\s]+)', header)
     
@@ -65,8 +57,6 @@ def get_uniprot_gff(uniprot_id):
     else:
         print(f"Error retrieving data: {response.status_code}")
         return None
-
-
 
 
 def function_site(uniprot_id):

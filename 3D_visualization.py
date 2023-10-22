@@ -9,11 +9,9 @@ def visualization(Uniprot_ID, lysine_list):
     view.add_cartoon(color='blue')
     view.add_surface(lysine_position, color='red',radius = 0.05)
     view.center()
-    display(view)
+    #display(view) only for jupyter notebook
 
-lysine_list = [55,80,106]
-Uniprot_ID = "O15552"
-visualization(Uniprot_ID, lysine_list)
+
 
 
 

@@ -31,25 +31,12 @@ def parse_pdb(pdb_file_path):
 
 
 pdb_file_path = '4ZWI.pdb'
-
-
 pdb_dataframe = parse_pdb(pdb_file_path)
-
-
 pdb_text = pdb_dataframe.to_string(index=False)
-
-
 pdb_dataframe.to_csv('pdb_data.csv', index=False)
-
-
 print(pdb_dataframe.head())
 
-
-
-
-
 #link uniprot ID to pdb dataframe
-
 uniprot_id = "P05067"
 
 def get_alphafold_download_link(uniprot_id):
