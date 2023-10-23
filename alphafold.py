@@ -30,8 +30,7 @@ def parse_pdb(pdb_url):
                     data['z'].append(atom.coord[2])
 
     df = pd.DataFrame(data)
-    print(df.head())
-    df.to_csv('pdbAlpafold.txt', sep='\t', index=False)
+    #df.to_csv('pdbAlpafold.txt', sep='\t', index=False)
     return df
 
 def get_alphafold_download_link(uniprot_id):
