@@ -11,27 +11,29 @@ def parse_pdb(pdb_url):
     
     response = requests.get(pdb_url)
     pdb_data = response.text
-    parser = PDB.PDBParser(QUIET=True)
-    structure = parser.get_structure('protein', pdb_data)
+    # parser = PDB.PDBParser(QUIET=True)
+    # structure = parser.get_structure('protein', pdb_data)
 
-    data = {'atom_number': [], 'atom_name': [], 'residue_name': [], 'chain_id': [], 'residue_number': [], 'x': [], 'y': [], 'z': []}
+    # data = {'atom_number': [], 'atom_name': [], 'residue_name': [], 'chain_id': [], 'residue_number': [], 'x': [], 'y': [], 'z': []}
 
-    for model in structure:
-        for chain in model:
-            for residue in chain:
-                for atom in residue:
-                    data['atom_number'].append(atom.serial_number)
-                    data['atom_name'].append(atom.name)
-                    data['residue_name'].append(residue.resname)
-                    data['chain_id'].append(chain.id)
-                    data['residue_number'].append(residue.id[1])
-                    data['x'].append(atom.coord[0])
-                    data['y'].append(atom.coord[1])
-                    data['z'].append(atom.coord[2])
+    # for model in structure:
+    #     for chain in model:
+    #         for residue in chain:
+    #             for atom in residue:
+    #                 data['atom_number'].append(atom.serial_number)
+    #                 data['atom_name'].append(atom.name)
+    #                 data['residue_name'].append(residue.resname)
+    #                 data['chain_id'].append(chain.id)
+    #                 data['residue_number'].append(residue.id[1])
+    #                 data['x'].append(atom.coord[0])
+    #                 data['y'].append(atom.coord[1])
+    #                 data['z'].append(atom.coord[2])
 
-    df = pd.DataFrame(data)
-    #df.to_csv('pdbAlpafold.txt', sep='\t', index=False)
-    return df
+    # df = pd.DataFrame(data)
+    # df.to_csv('pdbAlpafold.txt', sep='\t', index=False)
+    # print(df.head())
+    # return df
+    print(pdb_data)
 
 def get_alphafold_download_link(uniprot_id):
 	link_pattern = 'https://alphafold.ebi.ac.uk/files/AF-{}-F1-model_v2.pdb'

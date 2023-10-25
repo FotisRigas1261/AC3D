@@ -100,7 +100,18 @@ def function_site(uniprot_id):
 
 #print(function_site(uniprot_id))
 
-
+def get_uniprot_pdb(uniprot_id):
+    base_url = "https://rest.uniprot.org/uniprotkb/"
+    url = f"{base_url}{uniprot_id}.pdb"
+    
+    response = requests.get(url)
+    
+    if response.ok:
+        return response.text
+    else:
+        print(f"Error retrieving data: {response.status_code}")
+        return None
+    
 
 
 

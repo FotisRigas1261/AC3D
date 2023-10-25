@@ -19,6 +19,7 @@ else:
 try:
     open("../CPLMids.txt","r")
     open("../positions.txt","r")
+    open("../genenames.txt","r")
 except:
     c.get_CPLM_data('../Acetylation.txt')
 
@@ -29,16 +30,21 @@ Uniprot_id_of_Querry,Lysine_positions=q.Querry(Querry_string)
 ##TEST: use the uniprot id to get information
 ######
 
-#1.Fasta sequence
-get_from_uniprot.get_uniprot_fasta(Uniprot_id_of_Querry)
-get_from_uniprot.print_data(Uniprot_id_of_Querry)
+##1.Fasta sequence
+#get_from_uniprot.get_uniprot_fasta(Uniprot_id_of_Querry)
+#get_from_uniprot.print_data(Uniprot_id_of_Querry)
 
-#2.PDB files from alphafold
-link = alphafold.get_alphafold_download_link(Uniprot_id_of_Querry)
+##2.PDB files from alphafold
+#link = alphafold.get_alphafold_download_link(Uniprot_id_of_Querry)
 #print(link)
 #alphafold.parse_pdb(link)
 
-##3.Conservation
+##3.Conservation-works but slowly
 #lys.run_blast(Uniprot_id_of_Querry)
 #print(lys.conservation_score(Uniprot_id_of_Querry,Lysine_positions))
 
+##4. Files from uniprot
+#print(get_from_uniprot.get_uniprot_gff(Uniprot_id_of_Querry))
+#get_from_uniprot.function_site(Uniprot_id_of_Querry)
+#get pdb files:
+#get_from_uniprot.get_uniprot_pdb(Uniprot_id_of_Querry)

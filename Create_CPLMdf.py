@@ -51,12 +51,33 @@ def get_CPLM_data(path):
     if CPLM_ids != []:
         protein_names[dff["Accession_Number"][ii]] = positions  
     
- 
+    ##DICTIONARY with Gene names as keys and CPLM ids as values
+    dff2 = df.drop_duplicates(subset=["CPLM_id"])
+    dff2 = dff2.drop(columns=["Position"])
+    dff2 = dff2.dropna()
+    
+    duplicated_names=dff.duplicated(subset=["Gene_Name"])
+    gene_names = {}
+    CPLM_ids2 = []
+    iii = 0
+    for i in dff2.index:
+        
+        if duplicated_names[i]==False:
+            gene_names[dff2["Gene_Name"][iii]] = CPLM_ids2
+            iii = i
+            CPLM_ids2 = []
+
+        CPLM_ids2.append(dff2["CPLM_id"][i])
+    if CPLM_ids2 != []:
+        gene_names[dff2["Gene_Name"][iii]] = positions  
+    
+
     # save dicts as txt files
     with open('positions.txt', 'w') as f:
         print(CPLM_positions, file=f)
     with open('CPLMids.txt', 'w') as f:
         print(protein_names, file=f)
-    
+    with open('genenames.txt', 'w') as f:
+        print(gene_names, file=f)
 
     #df.to_csv('data.csv', index=False)
