@@ -4,7 +4,22 @@ import sys
 import get_from_uniprot
 import alphafold
 import Lysine_acetylation_conservation as lys
+import Secondary_structure_json as secnd
+import pdfReportCreator
 
+#Trial with structure map
+# Import structuremap functions
+import structuremap.utils
+structuremap.utils.set_logger()
+from structuremap.processing import download_alphafold_cif, download_alphafold_pae, format_alphafold_data, annotate_accessibility, get_smooth_score, annotate_proteins_with_idr_pattern, get_extended_flexible_pattern, get_proximity_pvals, perform_enrichment_analysis, perform_enrichment_analysis_per_protein, evaluate_ptm_colocalization, extract_motifs_in_proteome
+from structuremap.plotting import plot_enrichment, plot_ptm_colocalization
+import pandas as pd
+import numpy as np
+import os
+import re
+import plotly.express as px
+import tqdm
+import tempfile
 
 
 #Find the querried string
@@ -31,7 +46,7 @@ Uniprot_id_of_Querry,Lysine_positions=q.Querry(Querry_string)
 ######
 
 ##1.Fasta sequence
-#get_from_uniprot.get_uniprot_fasta(Uniprot_id_of_Querry)
+FASTA = get_from_uniprot.get_uniprot_fasta(Uniprot_id_of_Querry)
 #get_from_uniprot.print_data(Uniprot_id_of_Querry)
 
 ##2.PDB files from alphafold
@@ -48,3 +63,14 @@ Uniprot_id_of_Querry,Lysine_positions=q.Querry(Querry_string)
 #get_from_uniprot.function_site(Uniprot_id_of_Querry)
 #get pdb files:
 #get_from_uniprot.get_uniprot_pdb(Uniprot_id_of_Querry)
+
+##5.Secondary structure
+#print(secnd.helix_positions(Uniprot_id_of_Querry))
+#print(secnd.beta_positions(Uniprot_id_of_Querry))
+
+alphafold_annotation = format_alphafold_data(
+    directory="C:/Users/friga/Desktop/VSCode/IBPproject", 
+    protein_ids=Uniprot_id_of_Querry)
+
+##END: Create a report
+#pdfReportCreator.createreport(Uniprot_id_of_Querry,FASTA)
