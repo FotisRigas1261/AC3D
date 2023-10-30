@@ -8,7 +8,6 @@ import shutil
 
 
 output_dir = r"C:\Users\friga\Desktop\VSCode\IBPproject"
-
 cif_dir = os.path.join(output_dir, 'acetylation_cif')
 pae_dir = os.path.join(output_dir, 'acetylation_pae')
 

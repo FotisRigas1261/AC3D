@@ -2,7 +2,6 @@ import Querry as q
 import Create_CPLMdf as c
 import sys
 import get_from_uniprot
-import alphafold
 import Lysine_acetylation_conservation as lys
 import accessibility as acc
 
