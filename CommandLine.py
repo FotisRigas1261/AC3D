@@ -34,17 +34,20 @@ get_from_uniprot.get_uniprot_fasta(Uniprot_id_of_Querry)
 get_from_uniprot.print_data(Uniprot_id_of_Querry)
 
 ##2. Secondary structure
-acc.get_residue_accesibility(Uniprot_id_of_Querry)
+#acc.get_residue_accesibility(Uniprot_id_of_Querry)
 
 ##3.Conservation-works but slowly
 #lys.run_blast(Uniprot_id_of_Querry)
 print(lys.conservation_score(Uniprot_id_of_Querry,Lysine_positions))
 
 ##4. Get gff
-#print(get_from_uniprot.get_uniprot_gff(Uniprot_id_of_Querry))
-#WORKS print(get_from_uniprot.function_site(Uniprot_id_of_Querry)) #This has to be parsed to create a dataframe
-#get pdb files:
-#get_from_uniprot.get_uniprot_pdb(Uniprot_id_of_Querry)
+#get_from_uniprot.get_uniprot_gff(Uniprot_id_of_Querry)
+
+#Now we have:
+#1.CSV with secondary structure information and intrinsic disorder
+#2.List of acetylated lysines
+#3.List of conservation scores for acetylated lysines
+#4.Uniprot gff -> take the information out of there into a dataframe and then a CSV
 
 
 

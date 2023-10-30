@@ -17,7 +17,6 @@ def get_uniprot_fasta(uniprot_id):
         print(f"Error retrieving data: {response.status_code}")
         return None
 
-#uniprot_id = "P05067"
 def print_data(uniprot_id):
     fasta_data = get_uniprot_fasta(uniprot_id)
     
@@ -53,6 +52,9 @@ def get_uniprot_gff(uniprot_id):
     response = requests.get(url)
     
     if response.ok:
+        gff_file_path = 'uniprot.gff'
+        with open(gff_file_path, 'w', encoding='utf-8') as file:
+            file.write(response.text)
         return response.text
     else:
         print(f"Error retrieving data: {response.status_code}")
