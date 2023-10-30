@@ -23,8 +23,18 @@ def Querry(Querry_string):
                                 index = int(input("Type the number corresponding to your desired id: ".format(len(CPLMids))))
                                 if 1 <= index <= len(CPLMids):
                                     item_to_keep = CPLMids[index - 1]
-                                    CPLMids = [item_to_keep]  # Create a new list with only the selected item
-                                    print(CPLMids)
+
+
+                                    #Add the code from CPLM querry:
+                                    with open('../CPLMids.txt', 'r') as file:
+                                        file_contents = file.read()
+                                        #Package ast is used to handle txt files as dictionaries
+                                        data_dict = ast.literal_eval(file_contents)  # Safely parse the dictionary
+                                        #This creates a list which should only contain one element
+                                        UniprotID_list = [key for key, value in data_dict.items() if item_to_keep in value]
+                                        #Set this to querry string so that it gets returned at the end
+                                        Querry_string = UniprotID_list[0]
+                                    print(UniprotID)
                                 else:
                                     print("Index out of bounds. Please enter a valid index.")
                             except:
