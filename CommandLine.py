@@ -4,6 +4,7 @@ import sys
 import get_from_uniprot
 import Lysine_acetylation_conservation as lys
 import accessibility as acc
+import parse_gff
 
 
 #Find the querried string
@@ -29,25 +30,21 @@ Uniprot_id_of_Querry,Lysine_positions=q.Querry(Querry_string)
 ##TEST: use the uniprot id to get information
 ######
 
-##1.Fasta sequence
+##1.Fasta sequence NOT NEEDED
 get_from_uniprot.get_uniprot_fasta(Uniprot_id_of_Querry)
-get_from_uniprot.print_data(Uniprot_id_of_Querry)
 
-##2. Secondary structure
+##2. Secondary structure NEEDED
 #acc.get_residue_accesibility(Uniprot_id_of_Querry)
 
-##3.Conservation-works but slowly
+##3.Conservation-works but slowly NEEDED
 #lys.run_blast(Uniprot_id_of_Querry)
-print(lys.conservation_score(Uniprot_id_of_Querry,Lysine_positions))
+#Acetylation_scores=lys.conservation_score(Uniprot_id_of_Querry,Lysine_positions)
 
-##4. Get gff
-#get_from_uniprot.get_uniprot_gff(Uniprot_id_of_Querry)
+##4. Get gff NEEDED
+get_from_uniprot.get_uniprot_gff(Uniprot_id_of_Querry)
+gff_filepath='uniprot.gff'
+parse_gff.parse_gff(gff_filepath)
 
-#Now we have:
-#1.CSV with secondary structure information and intrinsic disorder
-#2.List of acetylated lysines
-#3.List of conservation scores for acetylated lysines
-#4.Uniprot gff -> take the information out of there into a dataframe and then a CSV
 
 
 
