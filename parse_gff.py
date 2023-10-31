@@ -4,7 +4,8 @@ import re
 
 def parse_gff(UniprotGff):
     #Keyword will be needed to split the gff files into mutations and structures
-    mut_keyword="Mutagenesis"
+    mut_keyword1="Mutagenesis"
+    mut_keyword2="Natural variant"
     mutations_data = []
     structure_data = []
     try:
@@ -13,7 +14,8 @@ def parse_gff(UniprotGff):
                 #####################################
                 #First, creating mutations data frame
                 #####################################
-                if mut_keyword in line:
+                #If the keyword is mutagenesis
+                if mut_keyword1 in line:
                     #getting the positions
                     columns = line.strip().split('\t')
                     position = columns[3]
@@ -32,11 +34,36 @@ def parse_gff(UniprotGff):
 
                     mutations_data.append([position,mtype,effect,source])
                     if len(mutations_data)>0:
-                        mutations_df = pd.DataFrame(mutations_data, columns=["Position","Type of mutation","Effect","Evidence"])                   
+                        mutations_df = pd.DataFrame(mutations_data, columns=["Position","Type of mutation","Effect","Evidence"])
+
+                #if the keyword is Natural variant
+                if mut_keyword2 in line:
+                    #getting the positions
+                    columns = line.strip().split('\t')
+                    position = columns[3]
+                    #getting mutation type
+                    match1 = re.search(r'([A-Z])->([A-Z])', line)
+                    if match1:
+                        before = match1.group(1)
+                        after = match1.group(2)
+                        mtype = before + "->" + after
+                    #getting the effect
+                    match2 = re.search(r'dbSNP:([^.,]+)[.,]?', line)
+                    effect = match2.group(1)
+                    #getting the source
+                    match3 = re.search(r'PubMed:([^;,]+)[;,]', line)
+                    if match3:
+                        source = "PubMed:"+match3.group(1)
+                    else:
+                        source=" "
+
+                    mutations_data.append([position,mtype,effect,source])
+                    if len(mutations_data)>0:
+                        mutations_df = pd.DataFrame(mutations_data, columns=["Position","Type of mutation","Effect","Evidence"])              
                 #######################################
                 #Second, creating structures data frame
                 #######################################
-                if not mut_keyword in line and not line.startswith("#"):
+                if not (mut_keyword1 in line or mut_keyword2 in line) and not line.startswith("#"):
                     columns = line.strip().split('\t')
                     start_position=columns[3]
                     end_position=columns[4]
