@@ -8,6 +8,7 @@ def parse_gff(UniprotGff):
     mut_keyword2="Natural variant"
     mutations_data = []
     structure_data = []
+    natural_variants=[]
     try:
         with open(UniprotGff, "r") as file:
             for line in file:
@@ -49,7 +50,11 @@ def parse_gff(UniprotGff):
                         mtype = before + "->" + after
                     #getting the effect
                     match2 = re.search(r'dbSNP:([^.,]+)[.,]?', line)
-                    effect = match2.group(1)
+                    if match2:
+                        effect = match2.group(1)
+                    else:
+                        match2b = re.search(r'AIPCS%([^%.]+)[%.]', line)
+                        effect = match2b.group(1)
                     #getting the source
                     match3 = re.search(r'PubMed:([^;,]+)[;,]', line)
                     if match3:
@@ -57,9 +62,9 @@ def parse_gff(UniprotGff):
                     else:
                         source=" "
 
-                    mutations_data.append([position,mtype,effect,source])
-                    if len(mutations_data)>0:
-                        mutations_df = pd.DataFrame(mutations_data, columns=["Position","Type of mutation","Effect","Evidence"])              
+                    natural_variants.append([position,mtype,effect,source])
+                    if len(natural_variants)>0:
+                        natural_variants_df = pd.DataFrame(natural_variants, columns=["Position","Type of variation","Effect","Evidence"])              
                 #######################################
                 #Second, creating structures data frame
                 #######################################
@@ -69,15 +74,20 @@ def parse_gff(UniprotGff):
                     end_position=columns[4]
                     structure=columns[2]
                     structure_data.append([start_position,end_position,structure])
-                    structures_df=pd.DataFrame(structure_data, columns=["Start position","End position","Structure"])
+                    if len(structure_data)>0:
+                        structures_df=pd.DataFrame(structure_data, columns=["Start position","End position","Structure"])
     except FileNotFoundError:
             print(f"File not found: {UniprotGff}")
 
-    structurepath = 'structures.csv'
-    structures_df.to_csv(structurepath, index=False)
+    if len(structure_data)>0:
+        structurepath = 'structures.csv'
+        structures_df.to_csv(structurepath, index=False)
     if len(mutations_data)>0:
         mutationspath = 'mutations.csv'
         mutations_df.to_csv(mutationspath, index=False)
+    if len(natural_variants)>0:
+        nvariantspath = 'natural_variants.csv'
+        natural_variants_df.to_csv(nvariantspath, index=False)
 
 # UniprotGff='uniprot.gff'
 # parse_gff(UniprotGff)
