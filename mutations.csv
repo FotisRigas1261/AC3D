@@ -1,8 +1,0 @@
-Position,Type of mutation,Effect,Evidence
-127,K->M,Abolishes enzymatic activity,"PubMed:11696533,ECO:0000269|PubMed:12911626,ECO:0000269|PubMed:15040001"
-256,T->A,Low activity,PubMed:10191262
-256,T->D,Low activity,PubMed:10191262
-256,T->E,Low activity,PubMed:10191262
-298,Y->A,Abolishes interaction with NEDD4 and NEDD4L,PubMed:11696533
-422,S->A,Low activity,"PubMed:10191262,ECO:0000269|PubMed:11696533,ECO:0000269|PubMed:12911626,ECO:0000269|PubMed:15040001"
-422,S->D,10-fold activation,"PubMed:10191262,ECO:0000269|PubMed:11696533,ECO:0000269|PubMed:12911626,ECO:0000269|PubMed:15040001"
