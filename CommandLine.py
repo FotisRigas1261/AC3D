@@ -4,7 +4,9 @@ import sys
 import get_from_uniprot
 import Lysine_acetylation_conservation as lys
 import accessibility as acc
-import parse_gff
+import file_parser 
+import pandas as pd
+import organiser
 
 
 #Find the querried string
@@ -27,24 +29,48 @@ except:
 Uniprot_id_of_Querry,Lysine_positions=q.Querry(Querry_string)
 
 ######
-##TEST: use the uniprot id to get information
+##PART 1: RETRIEVE DATA
 ######
 
 ##1.Fasta sequence NOT NEEDED
 get_from_uniprot.get_uniprot_fasta(Uniprot_id_of_Querry)
 
 ##2. Secondary structure NEEDED
-#acc.get_residue_accesibility(Uniprot_id_of_Querry)
+acc.get_residue_accesibility(Uniprot_id_of_Querry)
 
 ##3.Conservation-works but slowly NEEDED
-#lys.run_blast(Uniprot_id_of_Querry)
-#Acetylation_scores=lys.conservation_score(Uniprot_id_of_Querry,Lysine_positions)
+lys.run_blast(Uniprot_id_of_Querry)
+Acetylation_scores=lys.conservation_score(Uniprot_id_of_Querry,Lysine_positions)
 
 ##4. Get gff NEEDED
 get_from_uniprot.get_uniprot_gff(Uniprot_id_of_Querry)
+#This is hard-coded based on the previous outputs
 gff_filepath='uniprot.gff'
-parse_gff.parse_gff(gff_filepath)
+file_parser.parse_gff(gff_filepath)
 
+####
+##PART 2: Organise the data
+####
 
+#1.Parse the gff file. This is hard-coded based on the previous outputs
+Accecibility_file = 'SecondaryStrAndAccessibility.csv'
+Acc_dataframe=file_parser.parse_accessibility_csv(Accecibility_file)
 
+#2.Create a DataFrame with the positions and their acetylation scores
+combined_data = list(zip(Lysine_positions, Acetylation_scores))
+acetylated_lysines = pd.DataFrame(combined_data, columns=['Acetylated Lysines', 'Conservation score'])
+
+#3.Files created from gff file, put into dataframes
+structure_file = 'structures.csv'
+structures_dataframe = file_parser.parse_structures_csv(structure_file)
+mutations_file = 'mutations.csv'
+mutations_dataframe = file_parser.parse_structures_csv(mutations_file)
+natural_variants_file = 'natural_variants.csv'
+natural_variants_dataframe = file_parser.parse_structures_csv(natural_variants_file)
+
+#4.Create the final report and clear the working directory
+Report=organiser.combine_all_data(Acc_dataframe,acetylated_lysines,structures_dataframe,mutations_dataframe,natural_variants_dataframe)
+organiser.clear_files()
+path = 'Report.csv'
+Report.to_csv(path, index=False)
 

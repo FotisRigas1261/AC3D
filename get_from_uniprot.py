@@ -1,7 +1,6 @@
 import re
 import requests
 import pandas as pd
-import parse_gff
 
 
 #this code is to retrieve the fasta file from UniProt so the sequence and name information of the protein can be obtained by the UniProt ID

@@ -97,5 +97,20 @@ def parse_gff(UniprotGff):
         nvariantspath = 'natural_variants.csv'
         natural_variants_df.to_csv(nvariantspath, index=False)
 
-# UniprotGff='uniprot.gff'
-# parse_gff(UniprotGff)
+def parse_accessibility_csv(Accecibility_file):
+    Access_data_Frame = pd.read_csv(Accecibility_file)
+    columns_to_keep = ['AA', 'position', 'structure_group','IDR']
+    data_to_keep = Access_data_Frame[columns_to_keep]
+    return data_to_keep
+
+def parse_mutations_csv(mutations_file):
+    mutations_data_frame = pd.read_csv(mutations_file)
+    return mutations_data_frame
+
+def parse_natural_variants_csv(variants_file):
+    natural_variants_data_frame = pd.read_csv(variants_file)
+    return natural_variants_data_frame
+
+def parse_structures_csv(structures_file):
+    structures_data_frame = pd.read_csv(structures_file)
+    return structures_data_frame
