@@ -77,19 +77,26 @@ def parse_gff(UniprotGff):
                     #Second, creating structures data frame
                     #######################################
                     if not (mut_keyword1 in line or mut_keyword2 in line) and not line.startswith("#"):
+                        #This makes sure that all lines of the gff not refering to muatuions and natural variants are kept
                         columns = line.strip().split('\t')
                         start_position=columns[3]
                         end_position=columns[4]
                         structure=columns[2]
                         structure_data.append([start_position,end_position,structure])
+                        #But, many lines of the file contain info about disulfide bonds and PTM data (of AA which are not K),
+                        #as well as information about secondary structure which we already get in a more complete manner,
+                        #and are thus irrelevant. Here we decide to only keep data about signal peptides, binding sites and 
+                        #active sites    
                         if len(structure_data)>0:
                             structures_df=pd.DataFrame(structure_data, columns=["Start position","End position","Structure"])
+                            mask = (structures_df['Structure'] == 'Active site') | (structures_df['Structure'] == 'Signal peptide') | (structures_df['Structure'] == 'Binding site')
+                            filtered_Structure=structures_df[mask].copy()
     except FileNotFoundError:
             print(f"File not found: {UniprotGff}")
 
-    if len(structure_data)>0:
+    if not filtered_Structure.empty:
         structurepath = 'structures.csv'
-        structures_df.to_csv(structurepath, index=False)
+        filtered_Structure.to_csv(structurepath, index=False)
     if len(mutations_data)>0:
         mutationspath = 'mutations.csv'
         mutations_df.to_csv(mutationspath, index=False)

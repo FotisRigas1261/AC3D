@@ -1,42 +1,68 @@
 import pandas as pd
 import os
+import file_parser
 
-def combine_all_data(Acc_dataframe,acetylated_lysines,structures_dataframe,mutations_dataframe,natural_variants_dataframe):
+#This function works only if there is available data in the gff about natural variants, structures and mutations
+def combine_all_data(Acc_dataframe,acetylated_lysines):#,structures_dataframe,mutations_dataframe,natural_variants_dataframe):
     Total_data1 = pd.merge(Acc_dataframe, acetylated_lysines, left_on='position', right_on='Acetylated Lysines', how='left')
     #Set all empty values to 0 and all non empty values of acetylated lysines to 1
     Total_data1['Conservation score'] = Total_data1['Conservation score'].fillna(0)
 
-    #Only keep active sites, binding sites and signal peptides
-    mask = (structures_dataframe['Structure'] == 'Active site') | (structures_dataframe['Structure'] == 'Signal peptide') | (structures_dataframe['Structure'] == 'Binding site')
-    filtered_Structure=structures_dataframe[mask].copy()
+    ##This part of the code also has to check if there is available information in the gff files
+    #There are a lot of empty gff, or ones which only contain mutagenesis, natural variants or structures or a combination of those info
+    #The parse gff will create mutations/structures/natural_variant.csv only if tis information exists 
 
-    # Create the 'Function' column with 'Structure'
-    filtered_Structure['Function'] = filtered_Structure['Structure']
+    #1.First check for structures and intgrate them to the final data
+    structure_filepath = 'structures.csv'
+    if os.path.exists(structure_filepath):
+        structures_dataframe = file_parser.parse_structures_csv(structure_filepath)
 
-    # Combine the structure and Total1df
-    for index, row in filtered_Structure.iterrows():
-        start_pos = row['Start position']
-        end_pos = row['End position']
-        function = row['Function']
-        Total_data1.loc[(Total_data1['position'] >= start_pos) & (Total_data1['position'] <= end_pos), 'Function'] = function
+        # Create the 'Function' column with 'Structure', it better represents bindin sites etc
+        structures_dataframe['Function'] = structures_dataframe['Structure']
+        for index, row in structures_dataframe.iterrows():
+            start_pos = row['Start position']
+            end_pos = row['End position']
+            function = row['Function']
+            Total_data1.loc[(Total_data1['position'] >= start_pos) & (Total_data1['position'] <= end_pos), 'Function'] = function
+    else:
+        print("No information about Binding sites, Active sites or signal peptides is documented!")
 
-    #Combine mutations and natural variants
-    Total_data2 = pd.merge(Total_data1, mutations_dataframe, left_on='position', right_on='Position', how='left')
-    # Drop the duplicate 'Position' column if needed
-    Total_data2 = Total_data2.drop(columns=['Position'])
+    #2.Now check for available mutations
+    mutations_file = 'mutations.csv'
+    if os.path.exists(mutations_file):
+        mutations_dataframe = file_parser.parse_structures_csv(mutations_file)
+        Total_data2 = pd.merge(Total_data1, mutations_dataframe, left_on='position', right_on='Position', how='left')
+        # Drop the duplicate 'Position' column 
+        Total_data2 = Total_data2.drop(columns=['Position'])
+        #The existance of mutations is checked first, then check if also natural variants info exists
+        natural_variants_file = 'natural_variants.csv'
+        if os.path.exists(natural_variants_file):
+            natural_variants_dataframe = file_parser.parse_structures_csv(natural_variants_file)
+            Total_data3 = pd.merge(Total_data2, natural_variants_dataframe, left_on='position', right_on='Position', how='left')
+            Total_data3 = Total_data3.drop(columns=['Position'])
+            Total_data3 = Total_data3.rename(columns={
+                #The columns will automatically be titled as effect_x and effect_y because they have the same header
+                'Effect_x':'Mutation Effect',
+                'Evidence_x':'Mutation Evidence',
+                'Effect_y':'Variant Effect',
+                'Evidence_y':'Variant Evidence'
+                })
+            return Total_data3
+        else:
+            print("No information about natural variants exist!")
+            return Total_data2
+    #3.Check if only natural variants and no mutations exist
+    natural_variants_file = 'natural_variants.csv'
+    if os.path.exists(natural_variants_file) and not os.path.exists(mutations_file):
+        natural_variants_dataframe = file_parser.parse_structures_csv(natural_variants_file)
+        Total_data2 = pd.merge(Total_data1, natural_variants_dataframe, left_on='position', right_on='Position', how='left')
+        Total_data2 = Total_data2.drop(columns=['Position'])
+        print("No information about mutations exists!")
+        return Total_data2
+    else:
+        print("No information about natural variants or mutations exists!")
+        return Total_data1
 
-    #Combine natural variants
-    Total_data3 = pd.merge(Total_data2, natural_variants_dataframe, left_on='position', right_on='Position', how='left')
-    Total_data3 = Total_data3.drop(columns=['Position'])
-
-    Total_data3 = Total_data3.rename(columns={
-        'Effect_x':'Mutation Effect',
-        'Evidence_x':'Mutation Evidence',
-        'Effect_y':'Variant Effect',
-        'Evidence_y':'Variant Evidence'
-    })
-
-    return Total_data3
 
 def clear_files():
     current_folder = os.getcwd() 
