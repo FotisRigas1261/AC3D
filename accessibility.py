@@ -48,6 +48,8 @@ def get_residue_accesibility(id_from_uniprot):
     alphafold_accessibility = alphafold_annotation.merge(
     full_sphere_exposure, how='left', on=['protein_id','AA','position'])
     
+    alphafold_accessibility['high_acc_5'] = np.where(alphafold_accessibility.nAA_24_180_pae <= 5, 1, 0)
+    alphafold_accessibility['low_acc_5'] = np.where(alphafold_accessibility.nAA_24_180_pae > 5, 1, 0)
     
     alphafold_accessibility_smooth = get_smooth_score(
     alphafold_accessibility, 
