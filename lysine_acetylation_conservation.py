@@ -35,7 +35,3 @@ def conservation_score(uniprot_id, lysine_position):
     return conservation_list
                
 
-uniprot_id = "O00148"   
-run_blast(uniprot_id) 
-lysine_position = [32,35,333,383]        
-print(conservation_score(uniprot_id,lysine_position))   

@@ -61,7 +61,7 @@ def get_residue_accesibility(id_from_uniprot):
     #Remove excess files 
     directory_path = r'C:\Users\friga\Desktop\VSCode\IBPproject'
     file_list = os.listdir(directory_path)
-    filenames_to_Remove = ["acetylation_cif", "acetylation_pae"]
+    filenames_to_Remove = ["acetylation_pae"]
     for filename in file_list:
         if any(keyword in filename for keyword in filenames_to_Remove):
             file_path = os.path.join(directory_path, filename)

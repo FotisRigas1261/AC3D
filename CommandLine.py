@@ -2,7 +2,7 @@ import Querry as q
 import Create_CPLMdf as c
 import sys
 import get_from_uniprot
-import Lysine_acetylation_conservation as lys
+import lysine_acetylation_conservation as lys
 import accessibility as acc
 import file_parser 
 import pandas as pd
@@ -61,8 +61,9 @@ combined_data = list(zip(Lysine_positions, Acetylation_scores))
 acetylated_lysines = pd.DataFrame(combined_data, columns=['Acetylated Lysines', 'Conservation score'])
 
 #3.Create the final report and clear the working directory
-Report=organiser.combine_all_data(Acc_dataframe,acetylated_lysines)#,structures_dataframe,mutations_dataframe,natural_variants_dataframe)
+Report=organiser.combine_all_data(Acc_dataframe,acetylated_lysines)
 organiser.clear_files()
+organiser.ensure_uniform_format(Report)
 path = 'Report.csv'
 Report.to_csv(path, index=False)
 

@@ -3,11 +3,12 @@ import os
 import file_parser
 
 #This function works only if there is available data in the gff about natural variants, structures and mutations
-def combine_all_data(Acc_dataframe,acetylated_lysines):#,structures_dataframe,mutations_dataframe,natural_variants_dataframe):
+def combine_all_data(Acc_dataframe,acetylated_lysines):
+
     Total_data1 = pd.merge(Acc_dataframe, acetylated_lysines, left_on='position', right_on='Acetylated Lysines', how='left')
     #Set all empty values to 0 and all non empty values of acetylated lysines to 1
     Total_data1['Conservation score'] = Total_data1['Conservation score'].fillna(0)
-
+    Total_data1["Acetylated Lysines"] = Total_data1["Acetylated Lysines"].apply(lambda x: 1 if isinstance(x, (int, float)) else x)
     ##This part of the code also has to check if there is available information in the gff files
     #There are a lot of empty gff, or ones which only contain mutagenesis, natural variants or structures or a combination of those info
     #The parse gff will create mutations/structures/natural_variant.csv only if tis information exists 
@@ -16,7 +17,6 @@ def combine_all_data(Acc_dataframe,acetylated_lysines):#,structures_dataframe,mu
     structure_filepath = 'structures.csv'
     if os.path.exists(structure_filepath):
         structures_dataframe = file_parser.parse_structures_csv(structure_filepath)
-
         # Create the 'Function' column with 'Structure', it better represents bindin sites etc
         structures_dataframe['Function'] = structures_dataframe['Structure']
         for index, row in structures_dataframe.iterrows():
@@ -49,6 +49,10 @@ def combine_all_data(Acc_dataframe,acetylated_lysines):#,structures_dataframe,mu
                 })
             return Total_data3
         else:
+            Total_data2 = Total_data2.rename(columns={
+                'Effect':'Mutation Effect',
+                'Evidence':'Mutation Evidence'
+                })
             print("No information about natural variants exist!")
             return Total_data2
     #3.Check if only natural variants and no mutations exist
@@ -57,12 +61,27 @@ def combine_all_data(Acc_dataframe,acetylated_lysines):#,structures_dataframe,mu
         natural_variants_dataframe = file_parser.parse_structures_csv(natural_variants_file)
         Total_data2 = pd.merge(Total_data1, natural_variants_dataframe, left_on='position', right_on='Position', how='left')
         Total_data2 = Total_data2.drop(columns=['Position'])
+        Total_data2 = Total_data2.rename(columns={
+                'Effect':'Variant Effect',
+                'Evidence':'Variant Evidence'
+                })
         print("No information about mutations exists!")
         return Total_data2
     else:
         print("No information about natural variants or mutations exists!")
         return Total_data1
 
+#This fills the columns that we do not have information about
+def ensure_uniform_format(results_dataframe):
+    expected_columns = ['Function', 'Type of mutation', 'Mutation Effect', 'Mutation Evidence', 'Type of variation', 'Variant Effect', 'Variant Evidence']
+    # Check if all expected columns exist in the DataFrame
+    missing_columns = [column for column in expected_columns if column not in results_dataframe.columns]
+    for missing_column in missing_columns:
+        results_dataframe[missing_column] = 'NaN'
+    # Reorder the DataFrame to match the expected column order
+    results_dataframe = results_dataframe[expected_columns + [col for col in results_dataframe.columns if col not in expected_columns]]
+
+    return results_dataframe
 
 def clear_files():
     current_folder = os.getcwd() 
