@@ -2,7 +2,7 @@ import Querry as q
 import Create_CPLMdf as c
 import sys
 import get_from_uniprot
-import lysine_acetylation_conservation as lys
+import Lysine_acetylation_conservation as lys
 import accessibility as acc
 import file_parser 
 import pandas as pd
