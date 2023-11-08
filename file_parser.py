@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import re
-import logging
+import math
 
 def parse_gff(UniprotGff):
     #Keyword will be needed to split the gff files into mutations and structures
@@ -93,7 +93,7 @@ def parse_gff(UniprotGff):
                             mask = (structures_df['Structure'] == 'Active site') | (structures_df['Structure'] == 'Signal peptide') | (structures_df['Structure'] == 'Binding site')
                             filtered_Structure=structures_df[mask].copy()
     except FileNotFoundError:
-            logging.error(f"File not found: {UniprotGff}")
+            print(f"File not found: {UniprotGff}")
 
     if not filtered_Structure.empty:
         structurepath = 'structures.csv'
@@ -107,7 +107,7 @@ def parse_gff(UniprotGff):
 
 def parse_accessibility_csv(Accecibility_file):
     Access_data_Frame = pd.read_csv(Accecibility_file)
-    columns_to_keep = ['AA', 'position', 'structure_group','IDR']
+    columns_to_keep = ['AA', 'position', 'structure_group','IDR','high_acc_5','low_acc_5']
     data_to_keep = Access_data_Frame[columns_to_keep]
     return data_to_keep
 
@@ -122,3 +122,130 @@ def parse_natural_variants_csv(variants_file):
 def parse_structures_csv(structures_file):
     structures_data_frame = pd.read_csv(structures_file)
     return structures_data_frame
+
+#a link for the .cif file must be given
+#This function returns a table containing the mean positions of all amino-acids
+def parse_cif_file(link_to_cif):
+    column9 = []
+    column11 = []
+    column12 = []
+    column13 = []
+    with open(link_to_cif, 'r') as input_file:
+        for line in input_file:
+            if line.startswith('ATOM'):
+                # Split the line by whitespace
+                elements = line.split()
+
+                # Check if the line has enough elements
+                if len(elements) >= 13:
+                    column9.append(elements[8])
+                    column11.append(elements[10])
+                    column12.append(elements[11])
+                    column13.append(elements[12])
+    # Create a DataFrame from the extracted elements
+    data = {
+        'AA': column9,
+        'x_coor': column11,
+        'y_coor': column12,
+        'z_coor': column13
+    }
+    Atoms = pd.DataFrame(data)
+    #Atoms['AA'] = pd.to_numeric(Atoms['x_coor'], errors='coerce')
+    Atoms['x_coor'] = pd.to_numeric(Atoms['x_coor'], errors='coerce')
+    Atoms['y_coor'] = pd.to_numeric(Atoms['y_coor'], errors='coerce')
+    Atoms['z_coor'] = pd.to_numeric(Atoms['z_coor'], errors='coerce')
+    AA_mean_positions = Atoms.groupby('AA').mean().reset_index()
+    #print(AA_mean_positions)
+    return AA_mean_positions
+
+
+
+#This function should use the dataframe: AA_mean_positions and the list: acetylated lysine positions to give the distance of an
+#acetylated lysine from the protein binding and active sites as well as signal peptides, if they exist
+#In the dictionary that is returned, the key is the lysine and the values is the list with the distances of the acet.lysines
+#from the before mentioned structures. All structures are saved in the same list, but the order of the structures in the primary 
+#structure is respected inside the list. For example, if [1,2,3] the list and there is a signal peptide, b.site1, b.site2
+#distance 1 refers to signal peptide, 2 to b.site1, 3 to b.site2
+def get_distances(AA_mean_positions,acetylated_lysines_positions):
+    Distances_dictionary={} #Initiate the dictionary that will be returned in the end
+    #First create a table with the coordinates of the acetylated lysines: acet_lysines_mean_positions
+    AA_mean_positions['AA'] = pd.to_numeric(AA_mean_positions['AA'], errors='coerce')
+    acet_lysines_mean_positions=AA_mean_positions[AA_mean_positions['AA'].isin(acetylated_lysines_positions)]
+
+    #Then check for the existance of a structure.csv file. This type of file only exists if in the gff file
+    # there is available info about binding sites, active sites or signal peptides    
+    structure_filepath = 'structures.csv'
+    if os.path.exists(structure_filepath):
+        structures_df=parse_structures_csv(structure_filepath)
+        #What we need now is to create a list of aminoacids that take part into each binding site and a list of active site amino-acids
+        #This can be stored in a dictionary
+        site_positions = {}
+        for index, row in structures_df.iterrows():
+            start = row['Start position']
+            end = row['End position']
+            structure = row['Structure']
+
+            # If the structure is not in the dictionary, add it with an initial entry
+            if structure not in site_positions:
+                site_positions[structure] = []
+                site_positions_counter = 1
+
+            # Generate a range of positions and append to the appropriate list with numerical suffix
+            binding_positions = list(range(start, end + 1))
+            
+            # Create the key if it doesn't exist and then extend it
+            key = f"{structure}{site_positions_counter}"
+            if key not in site_positions:
+                site_positions[key] = []
+            site_positions[key].extend(binding_positions)
+
+            # Increment the numerical suffix
+            site_positions_counter += 1
+        #The previous process creates a dictionary that contains some empty items. Delete empty items:
+        filtered_site_positions = {key: value for key, value in site_positions.items() if any(char.isdigit() for char in key)}
+    #if the structure file does not exist
+     
+        #Now, in order to create a dictionary with all the distances, first iterate through the lysines
+        for lysine in acet_lysines_mean_positions.itertuples():
+            Distances_from_all_structures=[] #This is the final list we want to fill for each lysine
+            #Now iterate through the structure dictionary items. If their values list is equal to 1, directly get the distance from lys
+            for binding_site,Amino_acids in filtered_site_positions.items():
+                #Τhis creates a dataframe out of each one of the binding sites or structures in general
+                #Inside these dataframes there is the coordinates, that will be used to calculate the distance
+                binding_site=pd.DataFrame()
+                binding_site=AA_mean_positions[AA_mean_positions['AA'].isin(Amino_acids)]
+
+                #Now, for each of the acetylated lysines, calculate the distance from each binding site AA and store in list
+                for AA in binding_site.itertuples():
+                    binding_site_AA_distances_from_Lysine=[]
+                    #Euclidian distance
+                    Distance = math.sqrt((AA.x_coor - lysine.x_coor)**2 + (AA.y_coor - lysine.y_coor)**2 + 
+                                        (AA.z_coor - lysine.z_coor)**2)
+                    binding_site_AA_distances_from_Lysine.append(Distance)
+                    #Now only the smallest distnance in the list must be kept, and this will be the final distance from the bind.site
+                distance_from_structure=min(binding_site_AA_distances_from_Lysine)
+                #Now fill the list with all the distances
+                #In this list there is the proximity of a lysine to each structure, the first structure in the primary 
+                #sequence has the first distance in the list etc
+                Distances_from_all_structures.append(distance_from_structure)
+                #Round to 2 decimals to make the file readable
+                for i in range(len(Distances_from_all_structures)):
+                    Distances_from_all_structures[i] = round(Distances_from_all_structures[i], 2)
+
+            #Fill the initial dictionary        
+            Distances_dictionary[lysine.AA] = Distances_from_all_structures
+    else:
+        #If there is no structural information, return an empty dictionary
+        Distances_dictionary={}
+    
+    print(Distances_dictionary)
+    return Distances_dictionary
+            
+
+
+def get_cif_file():
+    cif_directory = "acetylation_cif"
+    cif_files = os.listdir(cif_directory)
+    if len(cif_files) == 1 and cif_files[0].endswith(".cif"):
+        link_to_cif = os.path.join(cif_directory, cif_files[0])   
+    return link_to_cif
