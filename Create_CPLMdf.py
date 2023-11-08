@@ -1,4 +1,6 @@
 import pandas as pd
+import os
+import PATH
 
 def get_CPLM_data(path):
 
@@ -73,12 +75,10 @@ def get_CPLM_data(path):
     
 
     # save dicts as txt files
-    with open('positions.txt', 'w') as f:
+    with open(os.path.join(PATH.DATA, 'positions.txt'), 'w') as f:
         print(CPLM_positions, file=f)
-    with open('CPLMids.txt', 'w') as f:
+    with open(os.path.join(PATH.DATA, 'CPLMids.txt'), 'w') as f:
         print(protein_names, file=f)
-    with open('genenames.txt', 'w') as f:
+    with open(os.path.join(PATH.DATA, 'genenames.txt'), 'w') as f:
         print(gene_names, file=f)
-
-    #df.to_csv('data.csv', index=False)
     

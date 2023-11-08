@@ -1,0 +1,8 @@
+
+*.pyc
+*.txt
+*.csv
+*.cif
+*.ini
+*.bak
+*.xml

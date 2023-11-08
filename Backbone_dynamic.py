@@ -3,6 +3,7 @@ from b2bTools import SingleSeq
 import pandas as pd
 import requests
 import platform
+import logging
 
 def backbone_dynamic(uniprot_id):
     base_url = "https://rest.uniprot.org/uniprotkb/"
@@ -39,10 +40,10 @@ def backbone_dynamic(uniprot_id):
             df.to_csv(f"{download_directory}/{uniprot_id}_backbone_dynamics.csv", index=True)
             return df
     else:
-        print(f"The dynamine does not run on {os_name} system.")
+        logging.warning(f"The dynamine does not run on {os_name} system.")
 
 result = backbone_dynamic("O00115")
-print(result)
+logging.debug(result)
 
 
 

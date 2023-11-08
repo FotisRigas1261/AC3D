@@ -6,6 +6,7 @@ from Bio import PDB
 import pandas as pd
 import requests
 from io import StringIO
+import logging
 
 def parse_pdb(pdb_url):
     
@@ -33,7 +34,7 @@ def parse_pdb(pdb_url):
     # df.to_csv('pdbAlpafold.txt', sep='\t', index=False)
     # print(df.head())
     # return df
-    print(pdb_data)
+    logging.debug(pdb_data)
 
 def get_alphafold_download_link(uniprot_id):
 	link_pattern = 'https://alphafold.ebi.ac.uk/files/AF-{}-F1-model_v2.pdb'

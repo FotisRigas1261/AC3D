@@ -2,6 +2,7 @@
 import requests
 import re
 import pandas as pd
+import logging
 
 def helix_positions(uniprot_id):
     
@@ -18,7 +19,7 @@ def helix_positions(uniprot_id):
         return helix_df
     else:
        
-        print(f"Error: Unable to retrieve data for Uniprot ID {uniprot_id}")
+        logging.error(f"Error: Unable to retrieve data for Uniprot ID {uniprot_id}")
         return None
 
 
@@ -35,7 +36,7 @@ def beta_positions(uniprot_id):
         return beta_df
     else:
        
-        print(f"Error: Unable to retrieve data for Uniprot ID {uniprot_id}")
+        logging.error(f"Error: Unable to retrieve data for Uniprot ID {uniprot_id}")
         return None
 
 

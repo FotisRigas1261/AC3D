@@ -3,26 +3,23 @@ import structuremap.utils
 structuremap.utils.set_logger()
 from structuremap.processing import download_alphafold_cif, download_alphafold_pae, format_alphafold_data, annotate_accessibility, get_smooth_score, annotate_proteins_with_idr_pattern, get_extended_flexible_pattern, get_proximity_pvals, perform_enrichment_analysis, perform_enrichment_analysis_per_protein, evaluate_ptm_colocalization, extract_motifs_in_proteome
 import os
+import PATH
 import shutil
+import logging
 
 
 
-output_dir = r"C:\Users\friga\Desktop\VSCode\IBPproject"
-cif_dir = os.path.join(output_dir, 'acetylation_cif')
-pae_dir = os.path.join(output_dir, 'acetylation_pae')
+
 
 
 def get_residue_accesibility(id_from_uniprot):
     
     #The functions used afterwards take only lists as arguments
     uniprot_ID=[id_from_uniprot]
-
-    # #Got these from outside
-    # output_dir = r"C:\Users\friga\Desktop\VSCode\IBPproject"
-
-    # cif_dir = os.path.join(output_dir, 'acetylation_cif')
-    # pae_dir = os.path.join(output_dir, 'acetylation_pae')
-    # ####
+    
+    output_dir = PATH.OUTPUT
+    cif_dir = os.path.join(output_dir, 'acetylation_cif')
+    pae_dir = os.path.join(output_dir, 'acetylation_pae')
     
     valid_proteins_cif, invalid_proteins_cif, existing_proteins_cif = download_alphafold_cif(
     proteins=uniprot_ID,
@@ -61,7 +58,7 @@ def get_residue_accesibility(id_from_uniprot):
     alphafold_accessibility_smooth['nAA_24_180_pae_smooth10']<=34.27, 1, 0)
     
     #Remove excess files 
-    directory_path = r'C:\Users\friga\Desktop\VSCode\IBPproject'
+    directory_path = PATH.TEMP
     file_list = os.listdir(directory_path)
     filenames_to_Remove = ["acetylation_pae"]
     for filename in file_list:
@@ -69,12 +66,12 @@ def get_residue_accesibility(id_from_uniprot):
             file_path = os.path.join(directory_path, filename)
             try:
                 shutil.rmtree(file_path)
-                print(f"Removed file: {file_path}")
+                logging.debug(f"Removed file: {file_path}")
             except Exception as e:
-                print(f"Error removing file {file_path}: {e}")
+                logging.error(f"Error removing file {file_path}: {e}")
 
     #Store the dataframe as a csv file
-    csv_file_path = 'SecondaryStrAndAccessibility.csv'
+    csv_file_path = os.path.join(directory_path, 'SecondaryStrAndAccessibility.csv')
 
     # Save the DataFrame to a CSV file
     alphafold_accessibility_smooth.to_csv(csv_file_path, index=False)

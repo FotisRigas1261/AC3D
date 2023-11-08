@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import re
+import logging
 
 def parse_gff(UniprotGff):
     #Keyword will be needed to split the gff files into mutations and structures
@@ -92,7 +93,7 @@ def parse_gff(UniprotGff):
                             mask = (structures_df['Structure'] == 'Active site') | (structures_df['Structure'] == 'Signal peptide') | (structures_df['Structure'] == 'Binding site')
                             filtered_Structure=structures_df[mask].copy()
     except FileNotFoundError:
-            print(f"File not found: {UniprotGff}")
+            logging.error(f"File not found: {UniprotGff}")
 
     if not filtered_Structure.empty:
         structurepath = 'structures.csv'
