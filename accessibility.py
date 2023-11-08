@@ -17,7 +17,7 @@ def get_residue_accesibility(id_from_uniprot):
     #The functions used afterwards take only lists as arguments
     uniprot_ID=[id_from_uniprot]
     
-    output_dir = PATH.OUTPUT
+    output_dir = PATH.TEMP
     cif_dir = os.path.join(output_dir, 'acetylation_cif')
     pae_dir = os.path.join(output_dir, 'acetylation_pae')
     

@@ -67,7 +67,7 @@ def main():
     ###########################
     
     #1.Parse the gff file. This is hard-coded based on the previous outputs
-    Accecibility_file = 'SecondaryStrAndAccessibility.csv'
+    Accecibility_file = os.path.join(PATH.TEMP, 'SecondaryStrAndAccessibility.csv')
     Acc_dataframe=file_parser.parse_accessibility_csv(Accecibility_file)
     
     #2.Create a DataFrame with the positions and their acetylation scores

@@ -2,6 +2,9 @@ import os
 import pandas as pd
 import re
 import math
+import logging
+import os
+import PATH
 
 def parse_gff(UniprotGff):
     #Keyword will be needed to split the gff files into mutations and structures
@@ -93,16 +96,16 @@ def parse_gff(UniprotGff):
                             mask = (structures_df['Structure'] == 'Active site') | (structures_df['Structure'] == 'Signal peptide') | (structures_df['Structure'] == 'Binding site')
                             filtered_Structure=structures_df[mask].copy()
     except FileNotFoundError:
-            print(f"File not found: {UniprotGff}")
+            logging.error(f"File not found: {UniprotGff}")
 
     if not filtered_Structure.empty:
-        structurepath = 'structures.csv'
+        structurepath = os.path.join(PATH.TEMP, 'structures.csv')
         filtered_Structure.to_csv(structurepath, index=False)
     if len(mutations_data)>0:
-        mutationspath = 'mutations.csv'
+        mutationspath = os.path.join(PATH.TEMP, 'mutations.csv')
         mutations_df.to_csv(mutationspath, index=False)
     if len(natural_variants)>0:
-        nvariantspath = 'natural_variants.csv'
+        nvariantspath = os.path.join(PATH.TEMP, 'natural_variants.csv')
         natural_variants_df.to_csv(nvariantspath, index=False)
 
 def parse_accessibility_csv(Accecibility_file):
@@ -155,7 +158,7 @@ def parse_cif_file(link_to_cif):
     Atoms['y_coor'] = pd.to_numeric(Atoms['y_coor'], errors='coerce')
     Atoms['z_coor'] = pd.to_numeric(Atoms['z_coor'], errors='coerce')
     AA_mean_positions = Atoms.groupby('AA').mean().reset_index()
-    #print(AA_mean_positions)
+    #logging.debug(AA_mean_positions)
     return AA_mean_positions
 
 
@@ -174,7 +177,7 @@ def get_distances(AA_mean_positions,acetylated_lysines_positions):
 
     #Then check for the existance of a structure.csv file. This type of file only exists if in the gff file
     # there is available info about binding sites, active sites or signal peptides    
-    structure_filepath = 'structures.csv'
+    structure_filepath = os.path.join(PATH.TEMP, 'structures.csv')
     if os.path.exists(structure_filepath):
         structures_df=parse_structures_csv(structure_filepath)
         #What we need now is to create a list of aminoacids that take part into each binding site and a list of active site amino-acids
@@ -238,13 +241,13 @@ def get_distances(AA_mean_positions,acetylated_lysines_positions):
         #If there is no structural information, return an empty dictionary
         Distances_dictionary={}
     
-    print(Distances_dictionary)
+    logging.debug(Distances_dictionary)
     return Distances_dictionary
             
 
 
 def get_cif_file():
-    cif_directory = "acetylation_cif"
+    cif_directory = os.path.join(PATH.TEMP, "acetylation_cif")
     cif_files = os.listdir(cif_directory)
     if len(cif_files) == 1 and cif_files[0].endswith(".cif"):
         link_to_cif = os.path.join(cif_directory, cif_files[0])   
