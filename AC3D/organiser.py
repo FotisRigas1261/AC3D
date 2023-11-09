@@ -98,5 +98,3 @@ def clear_files():
             elif file_name in files_to_delete:
                 os.remove(file_path)
                 logging.debug(f"Deleted {file_name}")
-            else:
-                logging.debug(f"File {file_name} not found")

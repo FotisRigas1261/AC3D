@@ -14,7 +14,7 @@ import PATH
 def main():
     
     logging.basicConfig(
-        level = logging.DEBUG, #level = logging.INFO,
+        level = logging.INFO,
         format = '[%(asctime)s] %(levelname)s: %(message)s',
         datefmt = '%d/%m %H:%M:%S',
         force=True

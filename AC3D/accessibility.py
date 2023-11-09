@@ -1,16 +1,18 @@
 import numpy as np
 import structuremap.utils
-structuremap.utils.set_logger()
 from structuremap.processing import download_alphafold_cif, download_alphafold_pae, format_alphafold_data, annotate_accessibility, get_smooth_score, annotate_proteins_with_idr_pattern, get_extended_flexible_pattern, get_proximity_pvals, perform_enrichment_analysis, perform_enrichment_analysis_per_protein, evaluate_ptm_colocalization, extract_motifs_in_proteome
 import os
 import PATH
 import shutil
 import logging
 
+class FilterUnwantedRecords():
+    def filter(self, record):
+        if 'structuremap' in record.pathname:
+            return False
+        return True
 
-
-
-
+logging.getLogger().addFilter(FilterUnwantedRecords())
 
 def get_residue_accesibility(id_from_uniprot):
     
@@ -20,6 +22,8 @@ def get_residue_accesibility(id_from_uniprot):
     output_dir = PATH.TEMP
     cif_dir = os.path.join(output_dir, 'acetylation_cif')
     pae_dir = os.path.join(output_dir, 'acetylation_pae')
+    
+    logging.info("Getting alphafold data...")
     
     valid_proteins_cif, invalid_proteins_cif, existing_proteins_cif = download_alphafold_cif(
     proteins=uniprot_ID,
