@@ -1,24 +1,25 @@
-import get_from_uniprot
 import ast
 import logging
+import os
+from AC3D import PATH
 
 def Querry(Querry_string):
 
     CPLMids = []
     if not Querry_string.startswith("CPLM"):
-        with open("CPLMids.txt","r") as f:
+        with open(os.path.join(PATH.DATA, "CPLMids.txt"),"r") as f:
             d = eval(f.read())
             try:
                 CPLMids = CPLMids + d[Querry_string]
             except:
                 #TRY to querry with genenames
-                with open("genenames.txt","r") as f:
+                with open(os.path.join(PATH.DATA, "genenames.txt"),"r") as f:
                     d = eval(f.read())
                     try:
                         CPLMids = CPLMids + d[Querry_string]
                         
                         UniprotID_list = []
-                        with open('CPLMids.txt', 'r') as file:
+                        with open(os.path.join(PATH.DATA, "CPLMids.txt"), 'r') as file:
                                     file_contents = file.read()
                                     #Package ast is used to handle txt files as dictionaries
                                     data_dict = ast.literal_eval(file_contents)  # Safely parse the dictionary
@@ -58,7 +59,7 @@ def Querry(Querry_string):
         
     
     positions = []       
-    with open("positions.txt","r") as f:
+    with open(os.path.join(PATH.DATA, "positions.txt"),"r") as f:
         d = eval(f.read())
         for CPLMid in CPLMids:
             positions = positions + d[CPLMid]
@@ -67,7 +68,7 @@ def Querry(Querry_string):
 
     #This part oif the function is made in order for the querry to always return uniprot ids
     if Querry_string.startswith("CPLM"):
-        with open('CPLMids.txt', 'r') as file:
+        with open(os.path.join(PATH.DATA, "CPLMids.txt"), 'r') as file:
             file_contents = file.read()
             #Package ast is used to handle txt files as dictionaries
             data_dict = ast.literal_eval(file_contents)  # Safely parse the dictionary

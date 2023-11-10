@@ -1,8 +1,7 @@
 import pandas as pd
 import os
-import file_parser
 import logging
-import PATH
+from AC3D import PATH, file_parser
 
 #This function works only if there is available data in the gff about natural variants, structures and mutations
 def combine_all_data(Acc_dataframe,acetylated_lysines):

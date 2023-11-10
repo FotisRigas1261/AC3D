@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-import PATH
+from AC3D import PATH
 
 def get_CPLM_data(path):
 

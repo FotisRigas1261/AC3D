@@ -1,35 +1,23 @@
-import Querry as q
-import Create_CPLMdf as c
+import AC3D.Querry as q
+import AC3D.Create_CPLMdf as c
 import sys
-import get_from_uniprot
-import Lysine_acetylation_conservation as lys
-import accessibility as acc
-import file_parser 
+import AC3D.Lysine_acetylation_conservation as lys
+import AC3D.accessibility as acc
 import pandas as pd
-import organiser
 import logging
 import os
-import PATH
+from AC3D import PATH, get_from_uniprot, file_parser, organiser
 
-def main():
-    
-    logging.basicConfig(
-        level = logging.INFO,
-        format = '[%(asctime)s] %(levelname)s: %(message)s',
-        datefmt = '%d/%m %H:%M:%S',
-        force=True
-    )
-    
-    #Find the querried string
-    Querry_string = ""
-    Report_name = 'Report.csv'
-    if len(sys.argv) == 1:
-        logging.info("Welcome to the protein acetylation tool!\n")
-        Querry_string = input('Type the name of the protein you want to investigate or a CPLM id: ')
-    else:
-        Querry_string = sys.argv[1]
-        if len(sys.argv) == 3:
-            Report_name = sys.argv[2]
+Report_name = 'Report.csv'
+
+logging.basicConfig(
+    level = logging.INFO,
+    format = '[%(asctime)s] %(levelname)s: %(message)s',
+    datefmt = '%d/%m %H:%M:%S',
+    force=True
+)
+
+def main(Querry_string):
         
     #if data files do not exist yet, create them
     try:
@@ -80,6 +68,22 @@ def main():
     organiser.ensure_uniform_format(Report)
     path = os.path.join(PATH.OUTPUT, Report_name)
     Report.to_csv(path, index=False)
+    logging.info("AC3D Finished")
+    return Report
+
+def get_output():
+    path = os.path.join(PATH.OUTPUT, Report_name)
+    return pd.read_csv(path)
+    
 
 if __name__ == "__main__":
-    main()
+    #Find the querried string
+    Querry_string = ""
+    if len(sys.argv) == 1:
+        logging.info("Welcome to the protein acetylation tool!\n")
+        Querry_string = input('Type the name of the protein you want to investigate or a CPLM id: ')
+    else:
+        Querry_string = sys.argv[1]
+        if len(sys.argv) == 3:
+            Report_name = sys.argv[2]
+    main(Querry_string)

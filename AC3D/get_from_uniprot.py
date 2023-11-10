@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 import logging
 import os
-import PATH
+from AC3D import PATH
 
 
 #this code is to retrieve the fasta file from UniProt so the sequence and name information of the protein can be obtained by the UniProt ID

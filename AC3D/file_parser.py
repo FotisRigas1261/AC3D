@@ -3,8 +3,7 @@ import pandas as pd
 import re
 import math
 import logging
-import os
-import PATH
+from AC3D import PATH
 
 def parse_gff(UniprotGff):
     #Keyword will be needed to split the gff files into mutations and structures
