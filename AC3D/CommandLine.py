@@ -8,10 +8,10 @@ import os
 from AC3D import PATH, get_from_uniprot, file_parser, organiser
 
 Report_name = 'Report.csv'
-BLAST = True
+BLAST = False
 
 logging.basicConfig(
-    level = logging.INFO,
+    level = logging.DEBUG,
     format = '[%(asctime)s] %(levelname)s: %(message)s',
     datefmt = '%d/%m %H:%M:%S',
     force=True
@@ -44,6 +44,12 @@ def main(Querry_string):
     #This is hard-coded based on the previous outputs
     gff_filepath=os.path.join(PATH.TEMP, 'uniprot.gff')
     file_parser.parse_gff(gff_filepath)
+    
+    ##5. Distance
+    cif_path = file_parser.get_cif_file()
+    d = file_parser.get_distances(file_parser.parse_cif_file(cif_path),Lysine_positions)
+    for key in d.keys():
+        logging.debug(int(min(d[key]) < 7))
     
     ###########################
     ##PART 2: Organise the data

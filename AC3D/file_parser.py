@@ -155,7 +155,7 @@ def parse_cif_file(link_to_cif):
         'z_coor': column13
     }
     Atoms = pd.DataFrame(data)
-    #Atoms['AA'] = pd.to_numeric(Atoms['x_coor'], errors='coerce')
+    #Atoms['AA'] = pd.to_numeric(Atoms['AA'], errors='coerce')
     Atoms['x_coor'] = pd.to_numeric(Atoms['x_coor'], errors='coerce')
     Atoms['y_coor'] = pd.to_numeric(Atoms['y_coor'], errors='coerce')
     Atoms['z_coor'] = pd.to_numeric(Atoms['z_coor'], errors='coerce')
@@ -253,4 +253,9 @@ def get_cif_file():
     cif_files = os.listdir(cif_directory)
     if len(cif_files) == 1 and cif_files[0].endswith(".cif"):
         link_to_cif = os.path.join(cif_directory, cif_files[0])   
-    return link_to_cif
+        return link_to_cif
+
+
+
+
+
