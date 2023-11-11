@@ -2,8 +2,17 @@ import ast
 import logging
 import os
 from AC3D import PATH
+import AC3D.Create_CPLMdf as c
 
 def Querry(Querry_string):
+    
+    #if data files do not exist yet, create them
+    try:
+        open(os.path.join(PATH.DATA, "CPLMids.txt"),"r")
+        open(os.path.join(PATH.DATA, "positions.txt"),"r")
+        open(os.path.join(PATH.DATA, "genenames.txt"),"r")
+    except:
+        c.get_CPLM_data(os.path.join(PATH.DATA, 'Acetylation.txt'))
 
     CPLMids = []
     if not Querry_string.startswith("CPLM"):

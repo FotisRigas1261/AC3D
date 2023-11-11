@@ -6,3 +6,6 @@
 *.ini
 *.bak
 *.xml
+build/**
+dist/**
+AC3D.egg-info/PKG-INFO

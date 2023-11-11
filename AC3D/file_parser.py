@@ -66,7 +66,10 @@ def parse_gff(UniprotGff):
                             effect = match2.group(1)
                         else:
                             match2b = re.search(r'AIPCS%([^%.]+)[%.]', line)
-                            effect = match2b.group(1)
+                            if match2b != None:
+                                effect = match2b.group(1)
+                            else:
+                                effect = ""
                         #getting the source
                         match3 = re.search(r'PubMed:([^;,]+)[;,]', line)
                         if match3:
@@ -107,8 +110,8 @@ def parse_gff(UniprotGff):
         nvariantspath = os.path.join(PATH.TEMP, 'natural_variants.csv')
         natural_variants_df.to_csv(nvariantspath, index=False)
 
-def parse_accessibility_csv(Accecibility_file):
-    Access_data_Frame = pd.read_csv(Accecibility_file)
+def parse_accessibility_csv(Accessibility_file):
+    Access_data_Frame = pd.read_csv(Accessibility_file)
     columns_to_keep = ['AA', 'position', 'structure_group','IDR','high_acc_5','low_acc_5']
     data_to_keep = Access_data_Frame[columns_to_keep]
     return data_to_keep

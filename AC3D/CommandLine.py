@@ -1,5 +1,4 @@
 import AC3D.Querry as q
-import AC3D.Create_CPLMdf as c
 import sys
 import AC3D.Lysine_acetylation_conservation as lys
 import AC3D.accessibility as acc
@@ -9,6 +8,7 @@ import os
 from AC3D import PATH, get_from_uniprot, file_parser, organiser
 
 Report_name = 'Report.csv'
+BLAST = True
 
 logging.basicConfig(
     level = logging.INFO,
@@ -18,14 +18,6 @@ logging.basicConfig(
 )
 
 def main(Querry_string):
-        
-    #if data files do not exist yet, create them
-    try:
-        open(os.path.join(PATH.DATA, "CPLMids.txt"),"r")
-        open(os.path.join(PATH.DATA, "positions.txt"),"r")
-        open(os.path.join(PATH.DATA, "genenames.txt"),"r")
-    except:
-        c.get_CPLM_data(os.path.join(PATH.DATA, 'Acetylation.txt'))
     
     #Set the Uniprot id
     Uniprot_id_of_Querry,Lysine_positions=q.Querry(Querry_string)
@@ -41,8 +33,11 @@ def main(Querry_string):
     acc.get_residue_accesibility(Uniprot_id_of_Querry)
     
     ##3.Conservation-works but slowly NEEDED
-    lys.run_blast(Uniprot_id_of_Querry)
-    Acetylation_scores=lys.conservation_score(Uniprot_id_of_Querry,Lysine_positions)
+    Acetylation_scores=[]
+    if BLAST:
+        lys.run_blast(Uniprot_id_of_Querry)
+        Acetylation_scores=lys.conservation_score(Uniprot_id_of_Querry,Lysine_positions)
+    
     
     ##4. Get gff NEEDED
     get_from_uniprot.get_uniprot_gff(Uniprot_id_of_Querry)
