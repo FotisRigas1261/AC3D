@@ -4,8 +4,12 @@ import py3Dmol
 from AC3D import get_from_uniprot, CommandLine, Querry
 
 @st.cache_data
-def create_report(Uniprot_ID):
-    return CommandLine.main(Uniprot_ID).to_csv().encode('utf-8')
+def create_reportdf(Uniprot_ID, blast=False):
+    return CommandLine.main(Uniprot_ID, blast)
+
+@st.cache_data
+def df_to_csv(df):
+    return df.to_csv().encode('utf-8')
 
 @st.cache_data
 def get_fasta(Uniprot_ID):

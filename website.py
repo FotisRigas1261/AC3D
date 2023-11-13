@@ -1,11 +1,23 @@
 import streamlit as st
 import functions as f
 from stmol import showmol
+import streamlit_toggle as tog
  
 st.write("""
 # AC3D
-*Welcome to the protein acetylation tool!*
+*Welcome to the protein acetylation tool!*\n
 """)
+
+blast = tog.st_toggle_switch(label="run blast", 
+                    key="blast", 
+                    default_value=False, 
+                    label_after = True, 
+                    inactive_color = '#D3D3D3', 
+                    active_color="#11567f", 
+                    track_color="#29B5E8"
+                    )
+if blast:
+    st.write('running blast may take a few minutes')
 
 Uniprot_ID = st.text_input('Give a uniprot id:', placeholder="Examples: O00115, P25665")
 
@@ -19,13 +31,24 @@ if Uniprot_ID != "":
     st.download_button("Download fasta", fasta, file_name= Uniprot_ID+".fasta")
     
     with st.spinner('Creating report...'):
-        csv = f.create_report(Uniprot_ID)    
+        df = f.create_reportdf(Uniprot_ID, blast)  
     st.download_button(
         label="Download report as CSV",
-        data=csv,
+        data=f.df_to_csv(df),
         file_name='Report.csv',
-        mime='text/csv',
-)
+        mime='text/csv',)
+    
+    show =tog.st_toggle_switch(label="show report", 
+                        key="csv", 
+                        default_value=False, 
+                        label_after = True, 
+                        inactive_color = '#D3D3D3', 
+                        active_color="#11567f", 
+                        track_color="#29B5E8"
+                        )
+    if show:
+        st.write(df)
+
     
 
 

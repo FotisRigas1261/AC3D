@@ -8,7 +8,6 @@ import os
 from AC3D import PATH, get_from_uniprot, file_parser, organiser
 
 Report_name = 'Report.csv'
-BLAST = False
 
 logging.basicConfig(
     level = logging.INFO,
@@ -17,7 +16,22 @@ logging.basicConfig(
     force=True
 )
 
-def main(Querry_string):
+"""Fetches data concerning acetylated lysines, processes the data and combines it into a dataframe
+
+Parameters
+----------
+Querry_str : str
+    The id of a protein, this can be a uniprot id, CPLM id or a gene name
+BLAST : bool, optional
+    Turn on or off the calculation of conservation scores, which uses blast (default is True)
+
+Returns
+-------
+report
+    a dataframe that combines all data collected and processed
+"""
+
+def main(Querry_string, BLAST=True):
     
     #Set the Uniprot id
     Uniprot_id_of_Querry,Lysine_positions=q.Querry(Querry_string)
@@ -49,7 +63,7 @@ def main(Querry_string):
     cif_path = file_parser.get_cif_file(Uniprot_id_of_Querry)
     d = file_parser.get_distances(file_parser.parse_cif_file(cif_path),Lysine_positions)
     for key in d.keys():
-        logging.debug(int(min(d[key]) < 7))
+        logging.info(int(min(d[key]) < 7))
     
     ###########################
     ##PART 2: Organise the data
@@ -64,13 +78,13 @@ def main(Querry_string):
     acetylated_lysines = pd.DataFrame(combined_data, columns=['Acetylated Lysines', 'Conservation score'])
     
     #3.Create the final report and clear the working directory
-    Report=organiser.combine_all_data(Acc_dataframe,acetylated_lysines)
+    report=organiser.combine_all_data(Acc_dataframe,acetylated_lysines)
     organiser.clear_files()
-    organiser.ensure_uniform_format(Report)
+    organiser.ensure_uniform_format(report)
     path = os.path.join(PATH.OUTPUT, Report_name)
-    Report.to_csv(path, index=False)
+    report.to_csv(path, index=False)
     logging.info("AC3D Finished")
-    return Report
+    return report
 
 def get_output():
     path = os.path.join(PATH.OUTPUT, Report_name)
