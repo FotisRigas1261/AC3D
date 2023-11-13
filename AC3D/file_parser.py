@@ -247,11 +247,16 @@ def get_distances(AA_mean_positions,acetylated_lysines_positions):
     return Distances_dictionary
             
 
-
-def get_cif_file():
+    
+def get_cif_file(name=None):
     cif_directory = os.path.join(PATH.TEMP, "acetylation_cif")
     cif_files = os.listdir(cif_directory)
-    if len(cif_files) == 1 and cif_files[0].endswith(".cif"):
+    if name !=None:
+        cif_file_name = name+".cif"
+        if cif_file_name in cif_files:
+            link_to_cif = os.path.join(cif_directory, cif_file_name)   
+            return link_to_cif
+    elif cif_files[0].endswith(".cif"):
         link_to_cif = os.path.join(cif_directory, cif_files[0])   
         return link_to_cif
 
