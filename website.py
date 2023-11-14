@@ -52,6 +52,8 @@ if Uniprot_ID != "":
                         )
     if show:
         st.write(df)
+    showmol(f.create_3Dobj_final(Uniprot_ID,df), width=650)
+    
 
     
 

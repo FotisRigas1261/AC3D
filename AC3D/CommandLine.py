@@ -76,10 +76,10 @@ def main(Querry_string, BLAST=True):
     #2.Create a DataFrame with the positions and their acetylation scores
     combined_data = list(zip(Lysine_positions, Acetylation_scores))
     acetylated_lysines = pd.DataFrame(combined_data, columns=['Acetylated Lysines', 'Conservation score'])
-    
+
     #3.Create the final report and clear the working directory
     report=organiser.combine_all_data(Acc_dataframe,acetylated_lysines)
-    organiser.clear_files()
+    #organiser.clear_files()
     organiser.ensure_uniform_format(report)
     path = os.path.join(PATH.OUTPUT, Report_name)
     report.to_csv(path, index=False)
@@ -99,6 +99,12 @@ if __name__ == "__main__":
         Querry_string = input('Type the name of the protein you want to investigate or a CPLM id: ')
     else:
         Querry_string = sys.argv[1]
-        if len(sys.argv) == 3:
-            Report_name = sys.argv[2]
+        if len(sys.argv) >= 3:
+            blast = eval(sys.argv[2])
+            if len(sys.argv) >= 4:
+                Report_name = sys.argv[3]
+             
+                
+            main(Querry_string, blast)
+            sys.exit()
     main(Querry_string)

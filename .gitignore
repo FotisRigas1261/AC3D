@@ -9,3 +9,4 @@
 build/**
 dist/**
 AC3D.egg-info/PKG-INFO
+*.gff
