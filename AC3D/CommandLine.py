@@ -63,7 +63,7 @@ def main(Querry_string, BLAST=True):
     cif_path = file_parser.get_cif_file(Uniprot_id_of_Querry)
     d = file_parser.get_distances(file_parser.parse_cif_file(cif_path),Lysine_positions)
     for key in d.keys():
-        logging.info(int(min(d[key]) < 7))
+        logging.debug(int(min(d[key]) < 7))
     
     ###########################
     ##PART 2: Organise the data
