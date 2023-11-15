@@ -29,13 +29,23 @@ with col1:
 
 if Uniprot_ID != "":
     
-    showmol(f.create_3Dobj(Uniprot_ID), width=650)
       
     fasta = f.get_fasta(Uniprot_ID)
     st.download_button("Download fasta", fasta, file_name= Uniprot_ID+".fasta")
     
+    
+    if "df_calculated" not in st.session_state:
+        st.session_state["df_calculated"] = False
+    
+    if not st.session_state.df_calculated:
+        showmol(f.create_3Dobj(Uniprot_ID), width=650)
     with st.spinner('Creating report...'):
         df = f.create_reportdf(Uniprot_ID, blast)  
+        if not st.session_state.df_calculated:
+            st.session_state.df_calculated = True
+            st.rerun()
+    showmol(f.create_3Dobj(Uniprot_ID,df), width=650)
+    
     st.download_button(
         label="Download report as CSV",
         data=f.df_to_csv(df),
@@ -52,7 +62,8 @@ if Uniprot_ID != "":
                         )
     if show:
         st.write(df)
-    showmol(f.create_3Dobj_final(Uniprot_ID,df), width=650)
+    
+    
     
 
     
