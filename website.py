@@ -1,6 +1,5 @@
 import streamlit as st
 import functions as f
-from stmol import showmol
 import streamlit_toggle as tog
 
 col1, col2, col3 = st.columns([1,3,1])
@@ -28,7 +27,6 @@ with col1:
 
 
 if Uniprot_ID != "":
-    
       
     fasta = f.get_fasta(Uniprot_ID)
     st.download_button("Download fasta", fasta, file_name= Uniprot_ID+".fasta")
@@ -36,15 +34,15 @@ if Uniprot_ID != "":
     
     if "df_calculated" not in st.session_state:
         st.session_state["df_calculated"] = False
-    
     if not st.session_state.df_calculated:
-        showmol(f.create_3Dobj(Uniprot_ID), width=650)
+        f.show_protein(Uniprot_ID)
+        
     with st.spinner('Creating report...'):
         df = f.create_reportdf(Uniprot_ID, blast)  
         if not st.session_state.df_calculated:
             st.session_state.df_calculated = True
             st.rerun()
-    showmol(f.create_3Dobj(Uniprot_ID,df), width=650)
+    f.show_protein(Uniprot_ID, df)
     
     st.download_button(
         label="Download report as CSV",
@@ -52,7 +50,7 @@ if Uniprot_ID != "":
         file_name='Report.csv',
         mime='text/csv',)
     
-    show =tog.st_toggle_switch(label="show report", 
+    show = tog.st_toggle_switch(label="show report", 
                         key="csv", 
                         default_value=False, 
                         label_after = True, 

@@ -2,8 +2,8 @@ import streamlit as st
 import py3Dmol
 from AC3D import get_from_uniprot, CommandLine, Querry
 import requests
-import pandas as pd
 import re
+from stmol import showmol
 
 @st.cache_data
 def create_reportdf(Uniprot_ID, blast=False):
@@ -18,7 +18,7 @@ def get_fasta(Uniprot_ID):
     return get_from_uniprot.get_uniprot_fasta(Uniprot_ID)
 
 @st.cache_data
-def create_3Dobj(Uniprot_ID, df=None):
+def create_3Dobj(Uniprot_ID, df=None, color_default="navy", color_alys="yellow", color_fun="purple", color_alysfun="red"):
     
     name, lysine_list = Querry.Querry(Uniprot_ID)
     
@@ -35,7 +35,7 @@ def create_3Dobj(Uniprot_ID, df=None):
         if len(split) == 0 or split[0] != "ATOM":
             continue
         
-        color = "navy"
+        color = color_default
         position = 0
         if len(split) == 12:
             position = int(split[5]) 
@@ -45,13 +45,13 @@ def create_3Dobj(Uniprot_ID, df=None):
         if df is not None:
             site_function = str(df["Function"].iloc[position-1])
             if site_function != "nan":
-                color = "purple"
+                color = color_fun
                 if position in lysine_list:
-                    color = "red"
+                    color = color_alysfun
             elif position in lysine_list:
-                color = "yellow"
+                color = color_alys
         elif position in lysine_list:
-            color = "yellow"
+            color = color_alys
             
     
         view.setStyle({'model': -1, 'serial': i+1}, {"cartoon": {'color': color}})
@@ -74,5 +74,14 @@ def create_3Dobj(Uniprot_ID, df=None):
                )
     view.zoomTo()
     return view
+
+def show_protein(Uniprot_ID, df=None, color_default="blue", color_alys="green", color_fun="violet", color_alysfun="orange"):
+    showmol(create_3Dobj(Uniprot_ID,df,color_default,color_alys,color_fun,color_alysfun), width=650)
+    col1, col2 = st.columns([1,1])
+    with col2:
+        st.write("In the protein above:")
+        st.write(f"acetylated lysines are :{color_alys}[{color_alys}]")
+        st.write(f"functional groups are :{color_fun}[{color_fun}]")
+        st.write(f"acetylated lysines in functional groups are :{color_alysfun}[{color_alysfun}]")
     
     
