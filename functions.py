@@ -5,7 +5,7 @@ import requests
 import re
 from stmol import showmol
 
-@st.cache_data
+@st.cache_data(show_spinner=False)
 def create_reportdf(Uniprot_ID, blast=False):
     return CommandLine.main(Uniprot_ID, blast)
 
@@ -18,9 +18,12 @@ def get_fasta(Uniprot_ID):
     return get_from_uniprot.get_uniprot_fasta(Uniprot_ID)
 
 @st.cache_data
-def create_3Dobj(Uniprot_ID, df=None, color_default="navy", color_alys="yellow", color_fun="purple", color_alysfun="red"):
-    
+def get_acetylated_lysines(Uniprot_ID):
     name, lysine_list = Querry.Querry(Uniprot_ID)
+    return lysine_list
+
+@st.cache_data
+def create_3Dobj(Uniprot_ID, lysine_list=[], df=None, color_default="navy", color_alys="yellow", color_fun="purple", color_alysfun="red"):
     
     pdb_link = f'https://alphafold.ebi.ac.uk/files/AF-{Uniprot_ID}-F1-model_v4.pdb'
     response = requests.get(pdb_link)
@@ -75,13 +78,22 @@ def create_3Dobj(Uniprot_ID, df=None, color_default="navy", color_alys="yellow",
     view.zoomTo()
     return view
 
-def show_protein(Uniprot_ID, df=None, color_default="blue", color_alys="green", color_fun="violet", color_alysfun="orange"):
-    showmol(create_3Dobj(Uniprot_ID,df,color_default,color_alys,color_fun,color_alysfun), width=650)
+def show_protein(Uniprot_ID, df=None, show_labels=False, color_default="blue", color_alys="green", color_fun="violet", color_alysfun="orange"):
+
+    lysine_list = get_acetylated_lysines(Uniprot_ID)
+    obj = create_3Dobj(Uniprot_ID,lysine_list,df,color_default,color_alys,color_fun,color_alysfun)
+    
+    if show_labels:
+        obj.addResLabels({'resi':lysine_list}, {'font': 'Arial', 'fontColor':'black','showBackground':False}) 
+    showmol(obj, width=650)
+    
     col1, col2 = st.columns([1,1])
     with col2:
         st.write("In the protein above:")
         st.write(f"acetylated lysines are :{color_alys}[{color_alys}]")
-        st.write(f"functional groups are :{color_fun}[{color_fun}]")
-        st.write(f"acetylated lysines in functional groups are :{color_alysfun}[{color_alysfun}]")
+        if df is not None:
+            st.write(f"functional groups are :{color_fun}[{color_fun}]")
+            st.write(f"acetylated lysines in functional groups are :{color_alysfun}[{color_alysfun}]")
+
     
     

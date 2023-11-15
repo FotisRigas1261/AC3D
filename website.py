@@ -31,18 +31,26 @@ if Uniprot_ID != "":
     fasta = f.get_fasta(Uniprot_ID)
     st.download_button("Download fasta", fasta, file_name= Uniprot_ID+".fasta")
     
+    show_labels = tog.st_toggle_switch(label="show acetylated lysine labels", 
+                        key="label", 
+                        default_value=False, 
+                        label_after = True, 
+                        inactive_color = '#D3D3D3', 
+                        active_color="#11567f", 
+                        track_color="#29B5E8"
+                        )
     
     if "df_calculated" not in st.session_state:
         st.session_state["df_calculated"] = False
     if not st.session_state.df_calculated:
-        f.show_protein(Uniprot_ID)
+        f.show_protein(Uniprot_ID, show_labels=show_labels)
         
     with st.spinner('Creating report...'):
         df = f.create_reportdf(Uniprot_ID, blast)  
         if not st.session_state.df_calculated:
             st.session_state.df_calculated = True
             st.rerun()
-    f.show_protein(Uniprot_ID, df)
+    f.show_protein(Uniprot_ID, df, show_labels=show_labels)
     
     st.download_button(
         label="Download report as CSV",
@@ -50,7 +58,7 @@ if Uniprot_ID != "":
         file_name='Report.csv',
         mime='text/csv',)
     
-    show = tog.st_toggle_switch(label="show report", 
+    show_report = tog.st_toggle_switch(label="show report", 
                         key="csv", 
                         default_value=False, 
                         label_after = True, 
@@ -58,7 +66,7 @@ if Uniprot_ID != "":
                         active_color="#11567f", 
                         track_color="#29B5E8"
                         )
-    if show:
+    if show_report:
         st.write(df)
     
     
