@@ -68,7 +68,7 @@ for i, row in df.iterrows():
     y_position = 0.16 - 0.02 * ['Membrane Spanning', 'Rigid Conformations', 'Flexible Regions', 'Context Dependent'].index(category_label)
     ax.text(0.05, y_position, category_label, color=category_color, ha='left', va='center', fontsize=4)
 
-
+ax.text(0.72, 0.5, 'Origin --->', color='black', ha='center', va='center', fontsize=8)
 ax.set_aspect('equal', adjustable='box')
 
 ax.set_xticks([])
