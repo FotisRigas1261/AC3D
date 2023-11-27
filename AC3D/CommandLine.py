@@ -47,7 +47,7 @@ def main(Querry_string, BLAST=True):
     acc.get_residue_accesibility(Uniprot_id_of_Querry)
     
     ##3.Conservation-works but slowly NEEDED
-    Acetylation_scores=[0]*len(Lysine_positions)
+    Acetylation_scores=[None]*len(Lysine_positions)
     if BLAST:
         lys.run_blast(Uniprot_id_of_Querry)
         Acetylation_scores=lys.conservation_score(Uniprot_id_of_Querry,Lysine_positions)
@@ -61,26 +61,30 @@ def main(Querry_string, BLAST=True):
     
     ##5. Distance
     cif_path = file_parser.get_cif_file(Uniprot_id_of_Querry)
-    d = file_parser.get_distances(file_parser.parse_cif_file(cif_path),Lysine_positions)
+    distances_dict = file_parser.get_distances(file_parser.parse_cif_file(cif_path),Lysine_positions)
     
-    #for key in d.keys():
-   #     logging.DEBUG(int(min(d[key]) < 7))
+
     
     ###########################
     ##PART 2: Organise the data
     ###########################
     
     #1.Parse the gff file. This is hard-coded based on the previous outputs
-    Accecibility_file = os.path.join(PATH.TEMP, 'SecondaryStrAndAccessibility.csv')
-    Acc_dataframe=file_parser.parse_accessibility_csv(Accecibility_file)
+    Accessibility_file = os.path.join(PATH.TEMP, 'SecondaryStrAndAccessibility.csv')
+    Acc_dataframe=file_parser.parse_accessibility_csv(Accessibility_file)
     
-    #2.Create a DataFrame with the positions and their acetylation scores
+    
+    #2. Combine the accessibility dataframe and dictionary with distances into one dataframe
+    dataframe = organiser.combine_df_dict(Acc_dataframe, distances_dict)
+    
+    
+    #3.Create a DataFrame with the positions and their acetylation scores
     combined_data = list(zip(Lysine_positions, Acetylation_scores))
-    print(combined_data)
     acetylated_lysines = pd.DataFrame(combined_data, columns=['Acetylated Lysines', 'Conservation score'])
 
-    #3.Create the final report and clear the working directory
-    report=organiser.combine_all_data(Acc_dataframe,acetylated_lysines)
+    
+    #4.Create the final report and clear the working directory
+    report=organiser.combine_all_data(dataframe,acetylated_lysines)
     #organiser.clear_files()
     organiser.ensure_uniform_format(report)
     path = os.path.join(PATH.OUTPUT, Report_name)

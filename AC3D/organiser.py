@@ -108,3 +108,13 @@ def integrate_backbone_dynamics(backbone_dynamics, results_dataframe):
         
         return(updated_results)
                 
+def combine_df_dict(Acc_dataframe, distances_dict, proximity_value=7):
+    # Create an empty DataFrame with a 'positions' column
+    distances_df = pd.DataFrame({'position': range(1, len(Acc_dataframe) + 1), 'distances': None, 'close_groups': 0})
+
+    for key, values in distances_dict.items():
+       # Fill the rows corresponding to the key with the values
+       distances_df['distances'].loc[key-1] = "|".join(map(str, values))
+       distances_df['close_groups'].loc[key-1] = len(list(filter(lambda x: x < proximity_value, values)))
+    return pd.merge(Acc_dataframe,distances_df)
+    
