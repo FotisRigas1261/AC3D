@@ -42,6 +42,7 @@ def backbone_dynamic(uniprot_id):
             return df
     else:
         logging.warning(f"The dynamine does not run on {os_name} system.")
+        return pd.DataFrame()
 
 logging.debug(backbone_dynamic("O00115"))
 

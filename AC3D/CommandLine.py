@@ -47,7 +47,7 @@ def main(Querry_string, BLAST=True):
     acc.get_residue_accesibility(Uniprot_id_of_Querry)
     
     ##3.Conservation-works but slowly NEEDED
-    Acetylation_scores=[]
+    Acetylation_scores=[0]*len(Lysine_positions)
     if BLAST:
         lys.run_blast(Uniprot_id_of_Querry)
         Acetylation_scores=lys.conservation_score(Uniprot_id_of_Querry,Lysine_positions)
@@ -62,8 +62,9 @@ def main(Querry_string, BLAST=True):
     ##5. Distance
     cif_path = file_parser.get_cif_file(Uniprot_id_of_Querry)
     d = file_parser.get_distances(file_parser.parse_cif_file(cif_path),Lysine_positions)
-    for key in d.keys():
-        logging.debug(int(min(d[key]) < 7))
+    
+    #for key in d.keys():
+   #     logging.DEBUG(int(min(d[key]) < 7))
     
     ###########################
     ##PART 2: Organise the data
@@ -75,6 +76,7 @@ def main(Querry_string, BLAST=True):
     
     #2.Create a DataFrame with the positions and their acetylation scores
     combined_data = list(zip(Lysine_positions, Acetylation_scores))
+    print(combined_data)
     acetylated_lysines = pd.DataFrame(combined_data, columns=['Acetylated Lysines', 'Conservation score'])
 
     #3.Create the final report and clear the working directory

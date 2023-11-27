@@ -9,7 +9,7 @@ def combine_all_data(Acc_dataframe,acetylated_lysines):
     Total_data1 = pd.merge(Acc_dataframe, acetylated_lysines, left_on='position', right_on='Acetylated Lysines', how='left')
     #Set all empty values to 0 and all non empty values of acetylated lysines to 1
     Total_data1['Conservation score'] = Total_data1['Conservation score'].fillna(0)
-    Total_data1["Acetylated Lysines"] = Total_data1["Acetylated Lysines"].apply(lambda x: 1 if isinstance(x, (int, float)) else x)
+    Total_data1["Acetylated Lysines"] = Total_data1["Acetylated Lysines"].apply(lambda x: 1 if x>0 else 0)
     ##This part of the code also has to check if there is available information in the gff files
     #There are a lot of empty gff, or ones which only contain mutagenesis, natural variants or structures or a combination of those info
     #The parse gff will create mutations/structures/natural_variant.csv only if tis information exists 
@@ -97,3 +97,14 @@ def clear_files():
             elif file_name in files_to_delete:
                 os.remove(file_path)
                 logging.debug(f"Deleted {file_name}")
+                
+def integrate_backbone_dynamics(backbone_dynamics, results_dataframe):
+    
+    if backbone_dynamics.empty:
+        return results_dataframe
+    else:
+        
+        updated_results = pd.concat(backbone_dynamics, results_dataframe, axis=1)
+        
+        return(updated_results)
+                

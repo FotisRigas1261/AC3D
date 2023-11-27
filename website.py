@@ -73,11 +73,13 @@ if Uniprot_ID != "":
         st.write(df)
     
     os_name = platform.system()
-    if os_name == 'Linux' or os_name == 'Darwin':
-        import AC3D.Backbone_dynamic as bd
-        dfbd = bd.backbone_dynamic(Uniprot_ID)
-        structure_circle.run(dfbd)
-        residue_query_box.run(dfbd)
+    if os_name == 'Linux': or os_name == 'Darwin':
+        #import AC3D.Backbone_dynamic as bd
+        #dfbd = bd.backbone_dynamic(Uniprot_ID)
+        #import pandas as pd
+        #dfbd = pd.read_csv('C:/O00115_backbone_dynamics.csv')
+        structure_circle.run(df)
+        residue_query_box.run(df)
     else:
         st.write("The backbone dynamics can't be shown on your operating system!")
         st.write("Your operating system is ", os_name)
