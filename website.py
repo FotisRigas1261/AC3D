@@ -73,7 +73,7 @@ if Uniprot_ID != "":
         st.write(df)
     
     os_name = platform.system()
-    if os_name == 'Linux': or os_name == 'Darwin':
+    if os_name == 'Linux' or os_name == 'Darwin':
         #import AC3D.Backbone_dynamic as bd
         #dfbd = bd.backbone_dynamic(Uniprot_ID)
         #import pandas as pd
