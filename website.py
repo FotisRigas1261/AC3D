@@ -1,6 +1,9 @@
 import streamlit as st
 import functions as f
 import streamlit_toggle as tog
+import platform
+import structure_circle
+import residue_query_box
 
 col1, col2, col3 = st.columns([1,3,1])
 with col2:
@@ -69,9 +72,14 @@ if Uniprot_ID != "":
     if show_report:
         st.write(df)
     
-    
-    
-
-    
+    os_name = platform.system()
+    if os_name == 'Linux' or os_name == 'Darwin':
+        import AC3D.Backbone_dynamic as bd
+        dfbd = bd.backbone_dynamic(Uniprot_ID)
+        structure_circle.run(dfbd)
+        residue_query_box.run(dfbd)
+    else:
+        st.write("The backbone dynamics can't be shown on your operating system!")
+        st.write("Your operating system is ", os_name)
 
 

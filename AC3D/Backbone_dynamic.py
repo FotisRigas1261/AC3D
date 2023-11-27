@@ -14,7 +14,8 @@ def backbone_dynamic(uniprot_id):
     with open(f"{download_directory}/{uniprot_id}.fasta", 'w') as fasta_file:
         fasta_file.write(response.text)
     os_name = platform.system()
-    if os_name == 'Linux' or 'Darwin':
+    logging.DEBUG(os_name)
+    if os_name == 'Linux' or os_name == 'Darwin':
         single_seq = SingleSeq(f"{download_directory}/{uniprot_id}.fasta")
         single_seq.predict(tools=['dynamine' ,'efoldmine'])
         all_predictions = single_seq.get_all_predictions()
@@ -42,8 +43,7 @@ def backbone_dynamic(uniprot_id):
     else:
         logging.warning(f"The dynamine does not run on {os_name} system.")
 
-result = backbone_dynamic("O00115")
-logging.debug(result)
+logging.debug(backbone_dynamic("O00115"))
 
 
 
