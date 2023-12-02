@@ -36,7 +36,7 @@ fig, ax = plt.subplots()
 
 ax.axhspan(0.55, flexible_threshold, color='blue', alpha=0.3, label='Flexible Region')
 ax.axhspan(dependent_lower_threshold, dependent_upper_threshold, color='yellow', alpha=0.3, label='Dependent Region')
-ax.axhspan(rigid_threshold, membrane_threshold, color='red', alpha=0.3, label='Membrane Spanning Region')
+ax.axhspan(rigid_threshold, membrane_threshold, color='red', alpha=0.3, label='Rigid Region')
 
 
 ax.plot(bdf.index, bdf['Backbone'], marker='o', markersize=3)
