@@ -18,7 +18,7 @@ def get_residue_accesibility(id_from_uniprot):
     #The functions used afterwards take only lists as arguments
     uniprot_ID=[id_from_uniprot]
     
-    output_dir = PATH.TEMP
+    output_dir = PATH.PATH().temp_path
     cif_dir = os.path.join(output_dir, 'acetylation_cif')
     pae_dir = os.path.join(output_dir, 'acetylation_pae')
     
@@ -61,7 +61,7 @@ def get_residue_accesibility(id_from_uniprot):
     alphafold_accessibility_smooth['nAA_24_180_pae_smooth10']<=34.27, 1, 0)
     
     #Remove excess files 
-    directory_path = PATH.TEMP
+    directory_path = PATH.PATH().temp_path
     file_list = os.listdir(directory_path)
     filenames_to_Remove = ["acetylation_pae"]
     for filename in file_list:

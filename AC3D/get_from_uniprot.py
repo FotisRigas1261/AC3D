@@ -24,7 +24,7 @@ def get_uniprot_gff(uniprot_id):
     response = requests.get(url)
     
     if response.ok:
-        gff_file_path = os.path.join(PATH.TEMP, 'uniprot.gff')
+        gff_file_path = os.path.join(PATH.PATH().temp_path, 'uniprot.gff')
         with open(gff_file_path, 'w', encoding='utf-8') as file:
             file.write(response.text)
 

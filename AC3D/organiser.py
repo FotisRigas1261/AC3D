@@ -15,7 +15,7 @@ def combine_all_data(Acc_dataframe,acetylated_lysines):
     #The parse gff will create mutations/structures/natural_variant.csv only if tis information exists 
 
     #1.First check for structures and intgrate them to the final data
-    structure_filepath = os.path.join(PATH.TEMP, 'structures.csv')
+    structure_filepath = os.path.join(PATH.PATH().temp_path, 'structures.csv')
     if os.path.exists(structure_filepath):
         structures_dataframe = file_parser.parse_structures_csv(structure_filepath)
         # Create the 'Function' column with 'Structure', it better represents bindin sites etc
@@ -29,14 +29,14 @@ def combine_all_data(Acc_dataframe,acetylated_lysines):
         logging.warning("No information about Binding sites, Active sites or signal peptides is documented!")
 
     #2.Now check for available mutations
-    mutations_file = os.path.join(PATH.TEMP, 'mutations.csv')
+    mutations_file = os.path.join(PATH.PATH().temp_path, 'mutations.csv')
     if os.path.exists(mutations_file):
         mutations_dataframe = file_parser.parse_structures_csv(mutations_file)
         Total_data2 = pd.merge(Total_data1, mutations_dataframe, left_on='position', right_on='Position', how='left')
         # Drop the duplicate 'Position' column 
         Total_data2 = Total_data2.drop(columns=['Position'])
         #The existance of mutations is checked first, then check if also natural variants info exists
-        natural_variants_file = os.path.join(PATH.TEMP, 'natural_variants.csv')
+        natural_variants_file = os.path.join(PATH.PATH().temp_path, 'natural_variants.csv')
         if os.path.exists(natural_variants_file):
             natural_variants_dataframe = file_parser.parse_structures_csv(natural_variants_file)
             Total_data3 = pd.merge(Total_data2, natural_variants_dataframe, left_on='position', right_on='Position', how='left')
@@ -57,7 +57,7 @@ def combine_all_data(Acc_dataframe,acetylated_lysines):
             logging.warning("No information about natural variants exist!")
             return Total_data2
     #3.Check if only natural variants and no mutations exist
-    natural_variants_file = os.path.join(PATH.TEMP, 'natural_variants.csv')
+    natural_variants_file = os.path.join(PATH.PATH().temp_path, 'natural_variants.csv')
     if os.path.exists(natural_variants_file) and not os.path.exists(mutations_file):
         natural_variants_dataframe = file_parser.parse_structures_csv(natural_variants_file)
         Total_data2 = pd.merge(Total_data1, natural_variants_dataframe, left_on='position', right_on='Position', how='left')
@@ -85,7 +85,7 @@ def ensure_uniform_format(results_dataframe):
     return results_dataframe
 
 def clear_files():
-    folder = PATH.TEMP
+    folder = PATH.PATH().temp_path
     files_to_delete = ["mutations.csv", "natural_variants.csv", "structures.csv","SecondaryStrAndAccessibility.csv","uniprot.gff"]
     for file_name in os.listdir(folder):
         file_path = os.path.join(folder, file_name)
@@ -114,7 +114,7 @@ def combine_df_dict(Acc_dataframe, distances_dict, proximity_value=7):
 
     for key, values in distances_dict.items():
        # Fill the rows corresponding to the key with the values
-       distances_df['distances'].loc[key-1] = "|".join(map(str, values))
-       distances_df['close_groups'].loc[key-1] = len(list(filter(lambda x: x < proximity_value, values)))
+       distances_df.loc[key-1, 'distances'] = "|".join(map(str, values))
+       distances_df.loc[key-1, 'close_groups'] = len(list(filter(lambda x: x < proximity_value, values)))
     return pd.merge(Acc_dataframe,distances_df)
     

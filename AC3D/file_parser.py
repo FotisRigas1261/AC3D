@@ -12,6 +12,7 @@ def parse_gff(UniprotGff):
     mutations_data = []
     structure_data = []
     natural_variants=[]
+    filtered_Structure = pd.DataFrame()
     try:
         with open(UniprotGff, "r") as file:
             line_count = 0
@@ -27,9 +28,13 @@ def parse_gff(UniprotGff):
                 #####################################
                 #If the keyword is mutagenesis
                     if mut_keyword1 in line:
+                        
+                        mtype,effect,source = None,None,None
+                        
                         #getting the positions
                         columns = line.strip().split('\t')
                         position = columns[3]
+                        
                         #getting mutation type
                         match1 = re.search(r'([A-Z])->([A-Z])', line)
                         if match1:
@@ -41,7 +46,9 @@ def parse_gff(UniprotGff):
                         effect = match2.group(1)
                         #getting the source
                         match3 = re.search(r'PubMed:([^;]+)[;]', line)
-                        source = "PubMed:"+match3.group(1)
+                        source=None
+                        if match3:
+                            source = "PubMed:"+match3.group(1)
 
                         mutations_data.append([position,mtype,effect,source])
                         if len(mutations_data)>0:
@@ -51,9 +58,13 @@ def parse_gff(UniprotGff):
                     #Creating Natural variant dataframe
                     #####################################
                     if mut_keyword2 in line:
+                        
+                        mtype,effect,source = None,None,None
+                        
                         #getting the positions
                         columns = line.strip().split('\t')
                         position = columns[3]
+                        
                         #getting mutation type
                         match1 = re.search(r'([A-Z])->([A-Z])', line)
                         if match1:
@@ -82,9 +93,11 @@ def parse_gff(UniprotGff):
                     #######################################
                     #Second, creating structures data frame
                     #######################################
-                    if not (mut_keyword1 in line or mut_keyword2 in line) and not line.startswith("#"):
+                    if not (mut_keyword1 in line or mut_keyword2 in line) and not line.startswith("#") and line:
                         #This makes sure that all lines of the gff not refering to muatuions and natural variants are kept
                         columns = line.strip().split('\t')
+                        if len(columns) < 4:
+                            break
                         start_position=columns[3]
                         end_position=columns[4]
                         structure=columns[2]
@@ -101,13 +114,13 @@ def parse_gff(UniprotGff):
             logging.error(f"File not found: {UniprotGff}")
 
     if not filtered_Structure.empty:
-        structurepath = os.path.join(PATH.TEMP, 'structures.csv')
+        structurepath = os.path.join(PATH.PATH().temp_path, 'structures.csv')
         filtered_Structure.to_csv(structurepath, index=False)
     if len(mutations_data)>0:
-        mutationspath = os.path.join(PATH.TEMP, 'mutations.csv')
+        mutationspath = os.path.join(PATH.PATH().temp_path, 'mutations.csv')
         mutations_df.to_csv(mutationspath, index=False)
     if len(natural_variants)>0:
-        nvariantspath = os.path.join(PATH.TEMP, 'natural_variants.csv')
+        nvariantspath = os.path.join(PATH.PATH().temp_path, 'natural_variants.csv')
         natural_variants_df.to_csv(nvariantspath, index=False)
 
 def parse_accessibility_csv(Accessibility_file):
@@ -179,7 +192,7 @@ def get_distances(AA_mean_positions,acetylated_lysines_positions):
 
     #Then check for the existance of a structure.csv file. This type of file only exists if in the gff file
     # there is available info about binding sites, active sites or signal peptides    
-    structure_filepath = os.path.join(PATH.TEMP, 'structures.csv')
+    structure_filepath = os.path.join(PATH.PATH().temp_path, 'structures.csv')
     if os.path.exists(structure_filepath):
         structures_df=parse_structures_csv(structure_filepath)
         #What we need now is to create a list of aminoacids that take part into each binding site and a list of active site amino-acids
@@ -221,21 +234,24 @@ def get_distances(AA_mean_positions,acetylated_lysines_positions):
                 binding_site=AA_mean_positions[AA_mean_positions['AA'].isin(Amino_acids)]
 
                 #Now, for each of the acetylated lysines, calculate the distance from each binding site AA and store in list
-                for AA in binding_site.itertuples():
-                    binding_site_AA_distances_from_Lysine=[]
+                binding_site_AA_distances_from_Lysine=[]
+                for AA in binding_site.itertuples():                   
                     #Euclidian distance
                     Distance = math.sqrt((AA.x_coor - lysine.x_coor)**2 + (AA.y_coor - lysine.y_coor)**2 + 
                                         (AA.z_coor - lysine.z_coor)**2)
                     binding_site_AA_distances_from_Lysine.append(Distance)
                     #Now only the smallest distnance in the list must be kept, and this will be the final distance from the bind.site
-                distance_from_structure=min(binding_site_AA_distances_from_Lysine)
+                distance_from_structure=None
+                if binding_site_AA_distances_from_Lysine:
+                    distance_from_structure=min(binding_site_AA_distances_from_Lysine)
                 #Now fill the list with all the distances
                 #In this list there is the proximity of a lysine to each structure, the first structure in the primary 
                 #sequence has the first distance in the list etc
-                Distances_from_all_structures.append(distance_from_structure)
+                if distance_from_structure:
+                    Distances_from_all_structures.append(distance_from_structure)
                 #Round to 2 decimals to make the file readable
-                for i in range(len(Distances_from_all_structures)):
-                    Distances_from_all_structures[i] = round(Distances_from_all_structures[i], 2)
+            for i in range(len(Distances_from_all_structures)):
+                Distances_from_all_structures[i] = round(Distances_from_all_structures[i], 2)
 
             #Fill the initial dictionary        
             Distances_dictionary[lysine.AA] = Distances_from_all_structures
@@ -249,7 +265,7 @@ def get_distances(AA_mean_positions,acetylated_lysines_positions):
 
     
 def get_cif_file(name=None):
-    cif_directory = os.path.join(PATH.TEMP, "acetylation_cif")
+    cif_directory = os.path.join(PATH.PATH().temp_path, "acetylation_cif")
     cif_files = os.listdir(cif_directory)
     if name !=None:
         cif_file_name = name+".cif"

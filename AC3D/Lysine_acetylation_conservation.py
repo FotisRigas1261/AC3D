@@ -12,14 +12,14 @@ def run_blast(uniprot_id):
     logging.info("running blast...")
     fasta_data = get_from_uniprot.get_uniprot_fasta(uniprot_id)
     result_handle = NCBIWWW.qblast("blastp", "nr", fasta_data)
-    with open(os.path.join(PATH.TEMP, f"blast_{uniprot_id}.xml"), "w") as save_file:
+    with open(os.path.join(PATH.PATH().temp_path, f"blast_{uniprot_id}.xml"), "w") as save_file:
         save_file.write(result_handle.read())
     result_handle.close()
     logging.info("blast completed succesfully")
  
 
 def conservation_score(uniprot_id, lysine_position):
-    filename = os.path.join(PATH.TEMP, f"blast_{uniprot_id}.xml")
+    filename = os.path.join(PATH.PATH().temp_path, f"blast_{uniprot_id}.xml")
     with open(filename, "r") as result_file:
         blast_result = NCBIXML.read(result_file)
     conservation_list = []
