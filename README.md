@@ -2,7 +2,7 @@
 
 
 ## Introduction
-AC/3D is a bioinformatics tool designed to provide context and 3D visualization for proteins with acetylated lysines. 
+AC/3D is a bioinformatics tool designed to provide context and 3D visualization for lysine acetylation in proteins. 
 
 
 ### Input Options
