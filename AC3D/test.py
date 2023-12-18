@@ -78,11 +78,11 @@ def test_errors():
 
 if __name__ == "__main__":
     #test_all(18807)
-    test_errors()
+    #test_errors()
         
         #not fixed all in accessiblity.py line 38
         #CommandLine.main("O00139-2", False) #accessibiltity, No objects to concatenate
-        #CommandLine.main("O08550", False) #accessibility, No objects to concatenate
+        CommandLine.main("O08550", False) #accessibility, No objects to concatenate
         #CommandLine.main("P0CE54", False) #accessibility, All arrays must be of the same length
         #CommandLine.main("P0CE55", False) #accessibility, '_atom_site.pdbx_sifts_xref_db_acc'
         #CommandLine.main("P0CE57", False) #accessibility, Empty file.
